@@ -41,16 +41,21 @@ th{background:#d9e6f2;text-align:left}
 .signature{margin-top:14px}
 .signature .line{width:180px;border-top:1px solid #000;margin-top:24px}
 .signature p{margin-top:6px;font-size:11px}
+.print-currency{display:none}
+.print-text{display:none}
 .no-print{display:initial}
+.field-view{display:block}
+.field-input{display:block}
 @media print{
   @page{size:A4 portrait;margin:10mm}
   html,body{width:210mm;height:297mm;background:#fff}
-  .toolbar,.no-print,.btn-del{display:none!important}
+  .toolbar,.no-print,.btn-del,.field-input,.select-view{display:none!important}
+  .print-currency,.print-text{display:block!important}
   .page{width:190mm;min-height:277mm;margin:0;padding:0;box-shadow:none;overflow:hidden}
   input,textarea,select{appearance:none;-webkit-appearance:none;border:none!important;background:transparent!important;padding:0}
+  .panel,.header,.title-block,.signature{page-break-inside:avoid}
   table{page-break-inside:auto}
   tr{page-break-inside:avoid;page-break-after:auto}
-  .panel,.header,.title-block,.signature{page-break-inside:avoid}
 }
 @media screen and (max-width:900px){
   .page{width:auto;min-height:auto;margin:0;padding:14px}
