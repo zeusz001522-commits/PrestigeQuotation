@@ -1,340 +1,157 @@
-!DOCTYPE html>
-
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-<meta charset="UTF-8">
-
-<title>FreightQ - Quotation Generator</title>
-
-<link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Freight Quotation Generator</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-
-
 <body>
-
-
-
-<div class="no-print sidebar">
-
-<h2>FreightQ</h2>
-
-<button onclick="printQuotation()">Print to PDF</button>
-
-</div>
-
-
-<div class="main-content">
-
-<header class="quotation-header">
-
-<div class="header-left">
-
-<img src="logo.png" alt="Company Logo" class="logo">
-
-<h1>PRESTIGE INTERNATIONAL LOGISTICS (PVT) LTD</h1>
-
-<p>No. 70 3/1 | 3rd Floor | Jethawana Road | Colombo 14 | Sri Lanka</p>
-
-<p>Email: mkt.prestige@pilcmb.com | Web: www.pilcmb.com</p>
-
-</div>
-
-<div class="header-right">
-
-<h2 class="title">QUOTATION</h2>
-
-<div class="doc-info">
-
-<p><strong>Ref No:</strong> <input type="text" id="qtnNo" value="QTN-2026-001"></p>
-
-<p><strong>Date:</strong> <input type="date" id="qtnDate"></p>
-
-<button class="no-print app-btn refresh-btn" onclick="location.reload()">
-
-Reset / New Quotation
-
-</button>
-
-</div>
-
-</div>
-
-</header>
-
-
-<hr>
-
-
-<div class="section grid">
-
-<div class="col">
-
-<h3>Bill To (Client)</h3>
-
-<div class="input-group">
-
-<label>Contact Name *</label>
-
-<input type="text" id="clientContact" placeholder="e.g. John Doe">
-
-</div>
-
-<div class="input-group">
-
-<label>Company Name</label>
-
-<input type="text" id="clientCompany" placeholder="e.g. Global Trade Ltd">
-
-</div>
-
-<div class="input-group">
-
-<label>Address</label>
-
-<textarea id="clientAddress" rows="2" placeholder="Street, City, Country"></textarea>
-
-</div>
-
-<div class="input-group grid-2">
-
-<div>
-
-<label>Phone</label>
-
-<input type="text" placeholder="+94 ...">
-
-</div>
-
-<div>
-
-<label>Email</label>
-
-<input type="email" placeholder="client@email.com">
-
-</div>
-
-</div>
-
-</div>
-
-<div class="col">
-
-<h3>Shipment Details</h3>
-
-<div class="input-group">
-
-<label>Origin:</label> <input type="text" placeholder="Port of Loading">
-
-</div>
-
-<div class="input-group">
-
-<label>Destination:</label> <input type="text" placeholder="Port of Discharge">
-
-</div>
-
-<div class="input-group">
-
-<label>Mode:</label>
-
-<select>
-
-<option>Sea / FCL</option>
-
-<option>Sea / LCL</option>
-
-<option>Air Freight</option>
-
-</select>
-
-</div>
-
-<div class="input-group">
-
-<label>Base Currency:</label>
-
-<select id="baseCurrency">
-
-<option value="USD">USD - US Dollar</option>
-
-<option value="LKR">LKR - Sri Lankan Rupee</option>
-
-<option value="EUR">EUR - Euro</option>
-
-<option value="GBP">GBP - British Pound</option>
-
-<option value="AED">AED - UAE Dirham</option>
-
-</select>
-
-<div class="no-print currency-rates" style="background: #eef2f7; padding: 15px; margin-bottom: 20px; border-radius: 8px;">
-
-<h4>Daily Exchange Rates (Base: 1 USD)</h4>
-
-<div style="display: flex; gap: 20px;">
-
-<label>1 USD = <input type="number" id="rateLKR" value="300" oninput="calculate()"> LKR</label>
-
-<label>1 USD = <input type="number" id="rateEUR" value="0.92" oninput="calculate()"> EUR</label>
-
-</div>
-
-<small>*These rates are used to calculate the Grand Total in USD.</small>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-
-<table id="chargesTable">
-
-<thead>
-
-<tr>
-
-<th>Description</th>
-
-<th>Qty</th>
-
-<th>Unit</th>
-
-<th>Rate</th>
-
-<th>Amount</th>
-
-<th class="no-print">Action</th>
-
-</tr>
-
-</thead>
-
-<tbody id="tableBody">
-
-<tr>
-
-<td><input type="text" value="Ocean Freight"></td>
-
-<td><input type="number" class="qty" value="1" oninput="calculate()"></td>
-
-<td>
-
-<select class="unit-select">
-
-<option value="Cont">Container</option>
-
-<option value="Kgs">Kgs</option>
-
-<option value="CBM">CBM</option>
-
-<option value="BL">B/L</option>
-
-<option value="Doc">Doc</option>
-
-<option value="Shipment">Shipment</option>
-
-<option value="20GP">20GP</option>
-
-<option value="40GP">40GP</option>
-
-<option value="Hour">Hour</option>
-
-</select>
-
-</td>
-
-<td>
-
-<select class="curr-select">
-
-<option value="USD">USD</option>
-
-<option value="LKR">LKR</option>
-
-<option value="EUR">EUR</option>
-
-</select>
-
-</td>
-
-<td><input type="number" class="rate" value="0" oninput="calculate()"></td>
-
-<td class="amount">0.00</td>
-
-<td class="no-print"><button onclick="removeRow(this)">✖</button></td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-<button class="no-print add-btn" onclick="addRow()">+ Add Charge Row</button>
-
-
-<div class="total-section">
-
-<div class="total-controls no-print">
-
-<label>Show Grand Total In:</label>
-
-<select id="finalCurrencySelector" onchange="calculate()">
-
-<option value="USD">USD - US Dollar</option>
-
-<option value="LKR">LKR - Sri Lankan Rupee</option>
-
-<option value="EUR">EUR - Euro</option>
-
-</select>
-
-</div>
-
-<div class="total-display-box">
-
-<p id="totalBreakdown" style="font-size: 11px; color: #666;"></p>
-
-<h2 id="mergedGrandTotal">TOTAL: 0.00 USD</h2>
-
-</div>
-
-<div class="footer-sections">
-
-<div class="remarks">
-
-<h4>Remarks / Inclusions:</h4>
-
-<textarea rows="3">Subject to space and equipment availability.</textarea>
-
-</div>
-
-<div class="terms">
-
-<h4>Terms & Conditions:</h4>
-
-<small>1. Rates valid for 30 days. 2. Subject to local taxes. 3. Payment as per agreement.</small>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-
-
-
-<script src="script.js"></script>
-
+  <div class="toolbar no-print">
+    <div class="brand">Freight Quotation Generator</div>
+    <div class="toolbar-actions">
+      <button type="button" class="btn btn-light" onclick="resetForm()">New Quotation</button>
+      <button type="button" class="btn btn-primary" onclick="printQuotation()">Print / Save PDF</button>
+    </div>
+  </div>
+
+  <main class="page" id="quotationPage">
+    <section class="header">
+      <div class="header-left">
+        <img src="logo.png" alt="Logo" class="logo" />
+        <div>
+          <h1>PRESTIGE INTERNATIONAL LOGISTICS (PVT) LTD</h1>
+          <p>No. 70 3/1, 3rd Floor, Jethawana Road, Colombo 14, Sri Lanka</p>
+          <p>Phone: +94 11 2470033 | Email: mkt.prestige@pilcmb.com | Web: www.pilcmb.com</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <h2>ISSUING OFFICE</h2>
+        <p>Cochin</p>
+        <p>2nd Floor, Pearl Arcade, T D Road</p>
+        <p>Ernakulam, Kerala, India</p>
+        <p>Phone: +91 484 413820</p>
+      </div>
+    </section>
+
+    <section class="title-block">
+      <h2>FREIGHT FORWARDING QUOTATION</h2>
+      <p>Sea Freight Export / LCL / FCL / Air Freight</p>
+    </section>
+
+    <section class="meta-grid">
+      <div class="panel">
+        <h3>Client Details</h3>
+        <label>Contact Name</label>
+        <input id="clientName" type="text" placeholder="Client name" />
+        <label>Company Name</label>
+        <input id="clientCompany" type="text" placeholder="Company name" />
+        <label>Address</label>
+        <textarea id="clientAddress" rows="4" placeholder="Client address"></textarea>
+        <label>Phone / Email</label>
+        <input id="clientContact" type="text" placeholder="Phone or email" />
+      </div>
+
+      <div class="panel">
+        <h3>Quotation Details</h3>
+        <label>Quotation No.</label>
+        <input id="quoteNo" type="text" />
+        <label>Date</label>
+        <input id="quoteDate" type="date" />
+        <label>Valid Till</label>
+        <input id="validTill" type="date" />
+        <label>Account Manager</label>
+        <input id="accountManager" type="text" placeholder="Manager name" />
+        <label>Mode</label>
+        <select id="mode">
+          <option>Sea Freight Export LCL</option>
+          <option>Sea Freight Export FCL</option>
+          <option>Air Freight</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="panel table-panel">
+      <div class="section-head">
+        <h3>Charge Lines</h3>
+        <button class="btn btn-success no-print" type="button" onclick="addRow()">+ Add Row</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:4%">#</th>
+            <th style="width:28%">Description</th>
+            <th style="width:10%">Qty</th>
+            <th style="width:10%">Unit</th>
+            <th style="width:10%">Currency</th>
+            <th style="width:12%">Rate</th>
+            <th style="width:12%">Amount</th>
+            <th style="width:14%" class="no-print">Action</th>
+          </tr>
+        </thead>
+        <tbody id="chargeBody">
+          <tr>
+            <td class="row-no">1</td>
+            <td><input type="text" value="Ocean Freight" /></td>
+            <td><input class="qty" type="number" min="0" value="1" oninput="calculate()" /></td>
+            <td><input type="text" value="CBM" /></td>
+            <td>
+              <select class="curr" onchange="calculate()">
+                <option>USD</option><option>LKR</option><option>EUR</option><option>GBP</option><option>AED</option>
+              </select>
+            </td>
+            <td><input class="rate" type="number" min="0" value="0" oninput="calculate()" /></td>
+            <td class="amount">0.00</td>
+            <td class="no-print"><button class="btn-del" type="button" onclick="removeRow(this)">Remove</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="currency-grid">
+      <div class="panel rates-panel no-print">
+        <h3>Exchange Rates</h3>
+        <label>1 USD = LKR</label>
+        <input id="rateLKR" type="number" step="0.0001" value="300" oninput="saveRates(); calculate()" />
+        <label>1 USD = EUR</label>
+        <input id="rateEUR" type="number" step="0.0001" value="0.92" oninput="saveRates(); calculate()" />
+        <label>1 USD = GBP</label>
+        <input id="rateGBP" type="number" step="0.0001" value="0.79" oninput="saveRates(); calculate()" />
+        <label>1 USD = AED</label>
+        <input id="rateAED" type="number" step="0.0001" value="3.67" oninput="saveRates(); calculate()" />
+      </div>
+
+      <div class="panel total-panel">
+        <label>Show Grand Total In</label>
+        <select id="targetCurrency" onchange="calculate()">
+          <option value="USD">USD</option>
+          <option value="LKR">LKR</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="AED">AED</option>
+        </select>
+        <p id="breakdown"></p>
+        <h2 id="grandTotal">TOTAL: 0.00 USD</h2>
+      </div>
+    </section>
+
+    <section class="footer-grid">
+      <div class="panel">
+        <h3>Remarks / Inclusions</h3>
+        <textarea id="remarks" rows="4">Subject to space and equipment availability.</textarea>
+      </div>
+      <div class="panel">
+        <h3>Terms & Conditions</h3>
+        <textarea id="terms" rows="4">Rates valid for 30 days. Subject to carrier availability. Payment as per agreement.</textarea>
+      </div>
+    </section>
+
+    <section class="signature">
+      <div class="line"></div>
+      <p>Authorized Signatory</p>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
 </body>
-
-</html>" 
+</html>
