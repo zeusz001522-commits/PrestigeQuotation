@@ -44,7 +44,6 @@ th{background:#d9e6f2;text-align:left}
 .print-currency{display:none}
 .print-text{display:none}
 .no-print{display:initial}
-.field-view{display:block}
 .field-input{display:block}
 @media print{
   @page{size:A4 portrait;margin:10mm}
@@ -56,6 +55,7 @@ th{background:#d9e6f2;text-align:left}
   .panel,.header,.title-block,.signature{page-break-inside:avoid}
   table{page-break-inside:auto}
   tr{page-break-inside:avoid;page-break-after:auto}
+  .rates-panel{display:none!important}
 }
 @media screen and (max-width:900px){
   .page{width:auto;min-height:auto;margin:0;padding:14px}
