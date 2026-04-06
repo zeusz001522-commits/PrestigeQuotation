@@ -1,5 +1,5 @@
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#eef2f7;color:#1b1b1b}
+html,body{margin:0;padding:0;background:#eef2f7;color:#1b1b1b;font-family:Arial,Helvetica,sans-serif}
 .toolbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:#0b2d4d;color:#fff}
 .brand{font-size:18px;font-weight:700}
 .toolbar-actions{display:flex;gap:10px}
@@ -8,49 +8,52 @@ body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#eef2f7;color:#1
 .btn-light{background:#e9eef5;color:#0b2d4d}
 .btn-success{background:#1f9d55;color:#fff}
 .btn-del{background:#d9534f;color:#fff;border:none;padding:7px 10px;border-radius:5px;cursor:pointer}
-.page{width:210mm;min-height:297mm;margin:18px auto;background:#fff;padding:14mm;box-shadow:0 8px 25px rgba(0,0,0,.08)}
-.header{display:flex;justify-content:space-between;gap:20px;padding-bottom:12px;border-bottom:2px solid #0b2d4d}
-.header-left{display:flex;gap:14px;align-items:flex-start}
-.logo{width:120px;object-fit:contain}
+.page{width:210mm;min-height:297mm;margin:18px auto;background:#fff;padding:10mm 12mm;box-shadow:0 8px 25px rgba(0,0,0,.08);overflow:hidden}
+.header{display:flex;justify-content:space-between;gap:14px;padding-bottom:10px;border-bottom:2px solid #0b2d4d}
+.header-left{display:flex;gap:12px;align-items:flex-start;min-width:0}
+.logo{width:100px;object-fit:contain;flex:0 0 auto}
 .header h1,.title-block h2,.panel h3,.signature p{margin:0}
-.header h1{font-size:18px;color:#0b2d4d;line-height:1.2}
-.header p{margin:3px 0;font-size:12px}
-.header-right{text-align:right;min-width:220px}
-.header-right h2{margin:0 0 6px;font-size:15px;color:#0b2d4d}
-.title-block{text-align:center;padding:14px 0 6px}
-.title-block h2{font-size:20px}
-.title-block p{margin:5px 0 0;font-weight:700;font-size:13px}
-.meta-grid,.currency-grid,.footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
-.panel{border:1px solid #000;padding:10px}
-.panel h3{font-size:14px;margin-bottom:8px}
-.panel label{display:block;font-size:12px;font-weight:700;margin:8px 0 4px}
-.panel input,.panel textarea,.panel select{width:100%;border:none;outline:none;background:transparent;font:inherit;font-size:12px}
-.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.header h1{font-size:16px;color:#0b2d4d;line-height:1.2}
+.header p{margin:2px 0;font-size:11px;line-height:1.3}
+.header-right{text-align:right;min-width:190px}
+.header-right h2{margin:0 0 5px;font-size:14px;color:#0b2d4d}
+.title-block{text-align:center;padding:10px 0 4px}
+.title-block h2{font-size:18px}
+.title-block p{margin:4px 0 0;font-weight:700;font-size:12px}
+.meta-grid,.currency-grid,.footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.panel{border:1px solid #000;padding:8px;min-width:0}
+.panel h3{font-size:13px;margin-bottom:6px}
+.panel label{display:block;font-size:11px;font-weight:700;margin:6px 0 3px}
+.panel input,.panel textarea,.panel select{width:100%;border:none;outline:none;background:transparent;font:inherit;font-size:11px;min-width:0}
+.panel textarea{resize:none;line-height:1.4}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
 table{width:100%;border-collapse:collapse;table-layout:fixed}
-th,td{border:1px solid #000;padding:6px;vertical-align:top;font-size:11px}
+th,td{border:1px solid #000;padding:5px;vertical-align:top;font-size:10px;overflow:hidden;word-wrap:break-word}
 th{background:#d9e6f2;text-align:left}
 .amount{text-align:right;font-weight:700}
 .row-no{text-align:center}
 .rates-panel,.total-panel{min-height:100%}
 .total-panel{display:flex;flex-direction:column;justify-content:center;align-items:flex-end;background:#f7fafc}
-.total-panel label{font-size:12px;font-weight:700}
-.total-panel select{margin:5px 0 10px}
-.total-panel h2{margin:0;color:#0b2d4d;font-size:24px}
-#breakdown{margin:0 0 8px;font-size:11px;color:#555}
-.signature{margin-top:24px}
-.signature .line{width:220px;border-top:1px solid #000;margin-top:32px}
-.signature p{margin-top:8px;font-size:12px}
+.total-panel label{font-size:11px;font-weight:700}
+.total-panel select{margin:4px 0 8px}
+.total-panel h2{margin:0;color:#0b2d4d;font-size:20px;text-align:right}
+#breakdown{margin:0 0 6px;font-size:10px;color:#555;text-align:right}
+.signature{margin-top:14px}
+.signature .line{width:180px;border-top:1px solid #000;margin-top:24px}
+.signature p{margin-top:6px;font-size:11px}
 .no-print{display:initial}
 @media print{
-  @page{size:A4;margin:10mm}
-  body{background:#fff}
+  @page{size:A4 portrait;margin:10mm}
+  html,body{width:210mm;height:297mm;background:#fff}
   .toolbar,.no-print,.btn-del{display:none!important}
-  .page{width:190mm;margin:0;padding:0;box-shadow:none}
+  .page{width:190mm;min-height:277mm;margin:0;padding:0;box-shadow:none;overflow:hidden}
   input,textarea,select{appearance:none;-webkit-appearance:none;border:none!important;background:transparent!important;padding:0}
+  table{page-break-inside:auto}
+  tr{page-break-inside:avoid;page-break-after:auto}
   .panel,.header,.title-block,.signature{page-break-inside:avoid}
 }
-@media(max-width:900px){
-  .page{width:auto;margin:0;padding:14px}
+@media screen and (max-width:900px){
+  .page{width:auto;min-height:auto;margin:0;padding:14px}
   .header,.meta-grid,.currency-grid,.footer-grid{grid-template-columns:1fr;display:grid}
   .header{display:grid}
   .header-left{flex-direction:column}
