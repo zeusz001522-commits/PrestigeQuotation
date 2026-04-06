@@ -43,27 +43,27 @@
       <div class="panel">
         <h3>Client Details</h3>
         <label>Contact Name</label>
-        <input id="clientName" type="text" placeholder="Client name" />
+        <input id="clientName" class="field-input" type="text" placeholder="Client name" />
         <label>Company Name</label>
-        <input id="clientCompany" type="text" placeholder="Company name" />
+        <input id="clientCompany" class="field-input" type="text" placeholder="Company name" />
         <label>Address</label>
         <textarea id="clientAddress" rows="4" placeholder="Client address"></textarea>
         <label>Phone / Email</label>
-        <input id="clientContact" type="text" placeholder="Phone or email" />
+        <input id="clientContact" class="field-input" type="text" placeholder="Phone or email" />
       </div>
 
       <div class="panel">
         <h3>Quotation Details</h3>
         <label>Quotation No.</label>
-        <input id="quoteNo" type="text" />
+        <input id="quoteNo" class="field-input" type="text" />
         <label>Date</label>
-        <input id="quoteDate" type="date" />
+        <input id="quoteDate" class="field-input" type="date" />
         <label>Valid Till</label>
-        <input id="validTill" type="date" />
+        <input id="validTill" class="field-input" type="date" />
         <label>Account Manager</label>
-        <input id="accountManager" type="text" placeholder="Manager name" />
+        <input id="accountManager" class="field-input" type="text" placeholder="Manager name" />
         <label>Mode</label>
-        <select id="mode">
+        <select id="mode" class="field-input select-view">
           <option>Sea Freight Export LCL</option>
           <option>Sea Freight Export FCL</option>
           <option>Air Freight</option>
@@ -92,15 +92,16 @@
         <tbody id="chargeBody">
           <tr>
             <td class="row-no">1</td>
-            <td><input type="text" value="Ocean Freight" /></td>
-            <td><input class="qty" type="number" min="0" value="1" oninput="calculate()" /></td>
-            <td><input type="text" value="CBM" /></td>
+            <td><input type="text" class="field-input" value="Ocean Freight" /><span class="print-text"></span></td>
+            <td><input class="qty field-input" type="number" min="0" value="1" oninput="calculate()" /></td>
+            <td><input type="text" class="field-input" value="CBM" /><span class="print-text"></span></td>
             <td>
-              <select class="curr" onchange="calculate()">
+              <select class="curr field-input select-view" onchange="calculate()">
                 <option>USD</option><option>LKR</option><option>EUR</option><option>GBP</option><option>AED</option>
               </select>
+              <span class="print-currency"></span>
             </td>
-            <td><input class="rate" type="number" min="0" value="0" oninput="calculate()" /></td>
+            <td><input class="rate field-input" type="number" min="0" value="0" oninput="calculate()" /></td>
             <td class="amount">0.00</td>
             <td class="no-print"><button class="btn-del" type="button" onclick="removeRow(this)">Remove</button></td>
           </tr>
@@ -112,13 +113,13 @@
       <div class="panel rates-panel no-print">
         <h3>Exchange Rates</h3>
         <label>1 USD = LKR</label>
-        <input id="rateLKR" type="number" step="0.0001" value="300" oninput="saveRates(); calculate()" />
+        <input id="rateLKR" class="field-input" type="number" step="0.0001" value="300" oninput="saveRates(); calculate()" />
         <label>1 USD = EUR</label>
-        <input id="rateEUR" type="number" step="0.0001" value="0.92" oninput="saveRates(); calculate()" />
+        <input id="rateEUR" class="field-input" type="number" step="0.0001" value="0.92" oninput="saveRates(); calculate()" />
         <label>1 USD = GBP</label>
-        <input id="rateGBP" type="number" step="0.0001" value="0.79" oninput="saveRates(); calculate()" />
+        <input id="rateGBP" class="field-input" type="number" step="0.0001" value="0.79" oninput="saveRates(); calculate()" />
         <label>1 USD = AED</label>
-        <input id="rateAED" type="number" step="0.0001" value="3.67" oninput="saveRates(); calculate()" />
+        <input id="rateAED" class="field-input" type="number" step="0.0001" value="3.67" oninput="saveRates(); calculate()" />
       </div>
 
       <div class="panel total-panel">
