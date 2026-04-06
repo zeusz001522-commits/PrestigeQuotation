@@ -2,157 +2,80 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="description" content="Freight quotation generator for logistics companies">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Freight Quotation Generator</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-  <div class="toolbar no-print">
-    <div class="brand">Freight Quotation Generator</div>
-    <div class="toolbar-actions">
-      <button type="button" class="btn btn-light" onclick="resetForm()">New Quotation</button>
-      <button type="button" class="btn btn-primary" onclick="printQuotation()">Print / Save PDF</button>
-    </div>
+<header class="toolbar no-print">
+  <div class="brand">Freight Quotation Generator</div>
+  <div>
+    <button id="newQuote" class="btn btn-light">New</button>
+    <button id="printBtn" class="btn btn-primary">Print / PDF</button>
   </div>
+</header>
 
-  <main class="page" id="quotationPage">
-    <section class="header">
-      <div class="header-left">
-        <img src="logo.png" alt="Logo" class="logo" />
-        <div>
-          <h1>PRESTIGE INTERNATIONAL LOGISTICS (PVT) LTD</h1>
-          <p>No. 70 3/1, 3rd Floor, Jethawana Road, Colombo 14, Sri Lanka</p>
-          <p>Phone: +94 11 2470033 | Email: mkt.prestige@pilcmb.com | Web: www.pilcmb.com</p>
-        </div>
+<main class="page" id="quotationPage">
+
+  <section class="header">
+    <div class="header-left">
+      <img src="logo.png" alt="Company Logo" class="logo">
+      <div>
+        <h1>Prestige International Logistics (Pvt) Ltd</h1>
+        <p>Colombo, Sri Lanka</p>
       </div>
-      <div class="header-right">
-        <h2>ISSUING OFFICE</h2>
-        <p>Cochin</p>
-        <p>2nd Floor, Pearl Arcade, T D Road</p>
-        <p>Ernakulam, Kerala, India</p>
-        <p>Phone: +91 484 413820</p>
-      </div>
-    </section>
+    </div>
+    <div class="header-right">
+      <h2>Quotation</h2>
+      <p id="quoteNo"></p>
+    </div>
+  </section>
 
-    <section class="title-block">
-      <h2>FREIGHT FORWARDING QUOTATION</h2>
-      <p>Sea Freight Export / LCL / FCL / Air Freight</p>
-    </section>
+  <section class="meta-grid">
+    <div class="panel">
+      <h3>Client Details</h3>
+      <input id="clientName" placeholder="Client Name">
+      <input id="clientCompany" placeholder="Company">
+      <textarea id="clientAddress" placeholder="Address"></textarea>
+    </div>
 
-    <section class="meta-grid">
-      <div class="panel">
-        <h3>Client Details</h3>
-        <label>Contact Name</label>
-        <input id="clientName" class="field-input" type="text" placeholder="Client name" />
-        <label>Company Name</label>
-        <input id="clientCompany" class="field-input" type="text" placeholder="Company name" />
-        <label>Address</label>
-        <textarea id="clientAddress" rows="4" placeholder="Client address"></textarea>
-        <label>Phone / Email</label>
-        <input id="clientContact" class="field-input" type="text" placeholder="Phone or email" />
-      </div>
+    <div class="panel">
+      <h3>Details</h3>
+      <input id="quoteDate" type="date">
+      <input id="validTill" type="date">
+      <select id="mode">
+        <option>Sea Freight</option>
+        <option>Air Freight</option>
+      </select>
+    </div>
+  </section>
 
-      <div class="panel">
-        <h3>Quotation Details</h3>
-        <label>Quotation No.</label>
-        <input id="quoteNo" class="field-input" type="text" />
-        <label>Date</label>
-        <input id="quoteDate" class="field-input" type="date" />
-        <label>Valid Till</label>
-        <input id="validTill" class="field-input" type="date" />
-        <label>Account Manager</label>
-        <input id="accountManager" class="field-input" type="text" placeholder="Manager name" />
-        <label>Mode</label>
-        <select id="mode" class="field-input select-view">
-          <option>Sea Freight Export LCL</option>
-          <option>Sea Freight Export FCL</option>
-          <option>Air Freight</option>
-        </select>
-      </div>
-    </section>
+  <section class="panel">
+    <h3>Charges</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Description</th>
+          <th>Qty</th>
+          <th>Rate</th>
+          <th>Total</th>
+          <th class="no-print"></th>
+        </tr>
+      </thead>
+      <tbody id="chargeBody"></tbody>
+    </table>
+    <button id="addRowBtn" class="btn btn-success no-print">+ Add</button>
+  </section>
 
-    <section class="panel table-panel">
-      <div class="section-head">
-        <h3>Charge Lines</h3>
-        <button class="btn btn-success no-print" type="button" onclick="addRow()">+ Add Row</button>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th style="width:4%">#</th>
-            <th style="width:28%">Description</th>
-            <th style="width:10%">Qty</th>
-            <th style="width:10%">Unit</th>
-            <th style="width:10%">Currency</th>
-            <th style="width:12%">Rate</th>
-            <th style="width:12%">Amount</th>
-            <th style="width:14%" class="no-print">Action</th>
-          </tr>
-        </thead>
-        <tbody id="chargeBody">
-          <tr>
-            <td class="row-no">1</td>
-            <td><input type="text" class="field-input" value="Ocean Freight" /><span class="print-text"></span></td>
-            <td><input class="qty field-input" type="number" min="0" value="1" oninput="calculate()" /></td>
-            <td><input type="text" class="field-input" value="CBM" /><span class="print-text"></span></td>
-            <td>
-              <select class="curr field-input select-view" onchange="calculate()">
-                <option>USD</option><option>LKR</option><option>EUR</option><option>GBP</option><option>AED</option>
-              </select>
-              <span class="print-currency"></span>
-            </td>
-            <td><input class="rate field-input" type="number" min="0" value="0" oninput="calculate()" /></td>
-            <td class="amount">0.00</td>
-            <td class="no-print"><button class="btn-del" type="button" onclick="removeRow(this)">Remove</button></td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+  <section class="total-panel">
+    <h2 id="grandTotal">Total: 0.00 USD</h2>
+  </section>
 
-    <section class="currency-grid">
-      <div class="panel rates-panel no-print">
-        <h3>Exchange Rates</h3>
-        <label>1 USD = LKR</label>
-        <input id="rateLKR" class="field-input" type="number" step="0.0001" value="300" oninput="saveRates(); calculate()" />
-        <label>1 USD = EUR</label>
-        <input id="rateEUR" class="field-input" type="number" step="0.0001" value="0.92" oninput="saveRates(); calculate()" />
-        <label>1 USD = GBP</label>
-        <input id="rateGBP" class="field-input" type="number" step="0.0001" value="0.79" oninput="saveRates(); calculate()" />
-        <label>1 USD = AED</label>
-        <input id="rateAED" class="field-input" type="number" step="0.0001" value="3.67" oninput="saveRates(); calculate()" />
-      </div>
+</main>
 
-      <div class="panel total-panel">
-        <label>Show Grand Total In</label>
-        <select id="targetCurrency" onchange="calculate()">
-          <option value="USD">USD</option>
-          <option value="LKR">LKR</option>
-          <option value="EUR">EUR</option>
-          <option value="GBP">GBP</option>
-          <option value="AED">AED</option>
-        </select>
-        <p id="breakdown"></p>
-        <h2 id="grandTotal">TOTAL: 0.00 USD</h2>
-      </div>
-    </section>
-
-    <section class="footer-grid">
-      <div class="panel">
-        <h3>Remarks / Inclusions</h3>
-        <textarea id="remarks" rows="4">Subject to space and equipment availability.</textarea>
-      </div>
-      <div class="panel">
-        <h3>Terms & Conditions</h3>
-        <textarea id="terms" rows="4">Rates valid for 30 days. Subject to carrier availability. Payment as per agreement.</textarea>
-      </div>
-    </section>
-
-    <section class="signature">
-      <div class="line"></div>
-      <p>Authorized Signatory</p>
-    </section>
-  </main>
-
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
