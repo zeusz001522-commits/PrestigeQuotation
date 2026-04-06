@@ -2,176 +2,194 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>FreightQ - Quotation Generator</title>
+    <title>Quotation Generator</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-
 <div class="no-print sidebar">
     <h2>FreightQ</h2>
+    <div class="no-print currency-rates" style="background: #eef2f7; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
+        <h4 style="margin-top:0; font-size:12px;">Daily Rates (Base: 1 USD)</h4>
+        <label style="font-size:11px;">1 USD = <input type="number" id="rateLKR" value="300" oninput="calculate()" style="width:50px; padding:2px;"> LKR</label><br>
+        <label style="font-size:11px;">1 USD = <input type="number" id="rateEUR" value="0.92" oninput="calculate()" style="width:50px; padding:2px;"> EUR</label>
+    </div>
+    
+    <label style="font-size:12px; font-weight:bold;">Grand Total Currency:</label>
+    <select id="finalCurrencySelector" onchange="calculate()" style="width:100%; margin-bottom:15px;">
+        <option value="USD">USD - US Dollar</option>
+        <option value="LKR">LKR - Sri Lankan Rupee</option>
+        <option value="EUR">EUR - Euro</option>
+    </select>
+
     <button onclick="printQuotation()">Print to PDF</button>
+    <button class="app-btn refresh-btn" onclick="location.reload()">Reset / New</button>
 </div>
 
 <div class="main-content">
     <header class="quotation-header">
-        <div class="header-left">
-            <img src="logo.png" alt="Company Logo" class="logo">
-            <h1>PRESTIGE INTERNATIONAL LOGISTICS (PVT) LTD</h1>
-            <p>No. 70 3/1 | 3rd Floor | Jethawana Road | Colombo 14 | Sri Lanka</p>
-            <p>Email: mkt.prestige@pilcmb.com | Web: www.pilcmb.com</p>
-        </div>
-        <div class="header-right">
-            <h2 class="title">QUOTATION</h2>
-            <div class="doc-info">
-                <p><strong>Ref No:</strong> <input type="text" id="qtnNo" value="QTN-2026-001"></p>
-                <p><strong>Date:</strong> <input type="date" id="qtnDate"></p>
-				<button class="no-print app-btn refresh-btn" onclick="location.reload()">
-    Reset / New Quotation
-</button>
-            </div>
-        </div>
+        <h1>SEVENSEAS GLOBAL EXPRESS LOGISTICS PRIVATE LIMITED</h1>
+        <p>Reg Off: Trifecta Adatto | 13th floor B Wing | 66/2,67/1 | ITPL Main Rd | Garudachar Palya | Mahadevapura Post | Bengaluru | 560048</p>
+        <p>T: +91 80 42694000 | E-Mail: info@sevenseasexpress.com | Web: www.sevenseasexpress.com</p>
     </header>
 
-    <hr>
+    <div class="doc-title">
+        <input type="text" value="QUOTATION FOR SEA FREIGHT EXPORT LCL">
+    </div>
 
-    <div class="section grid">
-        <div class="col">
-    <h3>Bill To (Client)</h3>
-    <div class="input-group">
-        <label>Contact Name *</label>
-        <input type="text" id="clientContact" placeholder="e.g. John Doe">
-    </div>
-    <div class="input-group">
-        <label>Company Name</label>
-        <input type="text" id="clientCompany" placeholder="e.g. Global Trade Ltd">
-    </div>
-    <div class="input-group">
-        <label>Address</label>
-        <textarea id="clientAddress" rows="2" placeholder="Street, City, Country"></textarea>
-    </div>
-    <div class="input-group grid-2">
-        <div>
-            <label>Phone</label>
-            <input type="text" placeholder="+94 ...">
-        </div>
-        <div>
-            <label>Email</label>
-            <input type="email" placeholder="client@email.com">
-        </div>
-    </div>
-</div>
-        <div class="col">
-            <h3>Shipment Details</h3>
-            <div class="input-group">
-                <label>Origin:</label> <input type="text" placeholder="Port of Loading">
+    <div class="info-grid">
+        <div class="col-left">
+            <span class="label">To:</span>
+            <textarea id="clientCompany" class="bold-text" rows="1">PRESTIGE INTERNATIONAL LOGISTICS (PVT) LTD.</textarea>
+            <textarea id="clientAddress" rows="2">No. 70 3/1, 3rd Floor, Jethawana road, Colombo 14, Sri Lanka</textarea>
+            
+            <div class="flex-row">
+                <span class="label">PH:</span>
+                <input type="text" id="clientPhone" placeholder="Enter Phone">
             </div>
-            <div class="input-group">
-                <label>Destination:</label> <input type="text" placeholder="Port of Discharge">
+            <div class="flex-row">
+                <span class="label">Fax:</span>
+                <input type="text" id="clientFax" value="+9411 2470033">
             </div>
-            <div class="input-group">
-                <label>Mode:</label>
-                <select>
-                    <option>Sea / FCL</option>
-                    <option>Sea / LCL</option>
-                    <option>Air Freight</option>
-                </select>
+            <div class="flex-row">
+                <span class="label">Attn:</span>
+                <input type="text" id="clientAttn" value="Duleeka">
             </div>
-			<div class="input-group">
-    <label>Base Currency:</label>
-    <select id="baseCurrency">
-        <option value="USD">USD - US Dollar</option>
-        <option value="LKR">LKR - Sri Lankan Rupee</option>
-        <option value="EUR">EUR - Euro</option>
-        <option value="GBP">GBP - British Pound</option>
-        <option value="AED">AED - UAE Dirham</option>
-    </select>
-	<div class="no-print currency-rates" style="background: #eef2f7; padding: 15px; margin-bottom: 20px; border-radius: 8px;">
-    <h4>Daily Exchange Rates (Base: 1 USD)</h4>
-    <div style="display: flex; gap: 20px;">
-        <label>1 USD = <input type="number" id="rateLKR" value="300" oninput="calculate()"> LKR</label>
-        <label>1 USD = <input type="number" id="rateEUR" value="0.92" oninput="calculate()"> EUR</label>
-    </div>
-    <small>*These rates are used to calculate the Grand Total in USD.</small>
-</div>
-</div>
         </div>
+        
+        <div class="col-right">
+            <div class="flex-row top-align">
+                <span class="label">Issuing Office:</span>
+                <textarea id="issuingOffice" rows="4">COCHIN
+2nd FLOOR Pearl arcade, T D Road,
+Ernakulam, Pin-682035, Kerala
+Ph:91 484 413820</textarea>
+            </div>
+            <div class="flex-row">
+                <span class="label">Account Manager:</span>
+                <input type="text" id="accManager" value="Agent.Namination.Cok">
+            </div>
+            <div class="flex-row">
+                <span class="label">Valid Till:</span>
+                <input type="date" id="validTill">
+            </div>
+            <div class="flex-row">
+                <span class="label">Quote No #:</span>
+                <input type="text" id="qtnNo">
+            </div>
+            <div class="flex-row">
+                <span class="label">Date:</span>
+                <input type="date" id="qtnDate">
+            </div>
+        </div>
+    </div>
+
+    <div class="service-info">
+        <input type="text" value="SERVICE INFORMATION - SEA FREIGHT EXPORT LCL / Ex-Works/Door Delivery/Local Charges">
     </div>
 
     <table id="chargesTable">
         <thead>
             <tr>
-                <th>Description</th>
+                <th>Location/Origin</th>
+                <th>Item / Description</th>
+                <th>Remarks</th>
                 <th>Qty</th>
-                <th>Unit</th>
+                <th>UOM</th>
+                <th>Curr</th>
                 <th>Rate</th>
                 <th>Amount</th>
-                <th class="no-print">Action</th>
+                <th class="no-print">Act</th>
             </tr>
         </thead>
         <tbody id="tableBody">
-    <tr>
-        <td><input type="text" value="Ocean Freight"></td>
-        <td><input type="number" class="qty" value="1" oninput="calculate()"></td>
-        <td>
-            <select class="unit-select">
-                <option value="Cont">Container</option>
-                <option value="Kgs">Kgs</option>
-                <option value="CBM">CBM</option>
-                <option value="BL">B/L</option>
-                <option value="Doc">Doc</option>
-                <option value="Shipment">Shipment</option>
-				<option value="20GP">20GP</option>
-				<option value="40GP">40GP</option>
-                <option value="Hour">Hour</option>
-            </select>
-        </td>
-        <td>
-            <select class="curr-select">
-                <option value="USD">USD</option>
-                <option value="LKR">LKR</option>
-                <option value="EUR">EUR</option>
-            </select>
-        </td>
-        <td><input type="number" class="rate" value="0" oninput="calculate()"></td>
-        <td class="amount">0.00</td>
-        <td class="no-print"><button onclick="removeRow(this)">✖</button></td>
-    </tr>
-</tbody>
+            <tr>
+                <td><input type="text" value="Cochin"></td>
+                <td><input type="text" value="OCEAN FREIGHT EXPORT"></td>
+                <td><input type="text" value="RATES IS INCLUSIVE OF DTHC"></td>
+                <td><input type="number" class="qty" value="1" oninput="calculate()"></td>
+                <td>
+                    <select class="unit-select">
+                        <option value="CBM">CBM</option>
+                        <option value="Cont">Container</option>
+                        <option value="Kgs">Kgs</option>
+                        <option value="BILLS OF LADING">BILLS OF LADING</option>
+                        <option value="SHIPMENT">SHIPMENT</option>
+                        <option value="VEHICLE">VEHICLE</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="curr-select">
+                        <option value="USD">USD</option>
+                        <option value="LKR">LKR</option>
+                        <option value="EUR">EUR</option>
+                    </select>
+                </td>
+                <td><input type="number" class="rate" value="27.00" oninput="calculate()"></td>
+                <td class="amount">0.00</td>
+                <td class="no-print"><button onclick="removeRow(this)">✖</button></td>
+            </tr>
+            <tr>
+                <td><input type="text" value="Cochin"></td>
+                <td><input type="text" value="TERMINAL HANDLING CHARGES"></td>
+                <td><input type="text" value=""></td>
+                <td><input type="number" class="qty" value="1" oninput="calculate()"></td>
+                <td><select class="unit-select"><option value="CBM">CBM</option></select></td>
+                <td><select class="curr-select"><option value="USD">USD</option></select></td>
+                <td><input type="number" class="rate" value="18.00" oninput="calculate()"></td>
+                <td class="amount">0.00</td>
+                <td class="no-print"><button onclick="removeRow(this)">✖</button></td>
+            </tr>
+        </tbody>
     </table>
     
-    <button class="no-print add-btn" onclick="addRow()">+ Add Charge Row</button>
+    <button class="no-print add-btn" onclick="addRow()">+ Add Row</button>
 
     <div class="total-section">
-    <div class="total-controls no-print">
-        <label>Show Grand Total In:</label>
-        <select id="finalCurrencySelector" onchange="calculate()">
-            <option value="USD">USD - US Dollar</option>
-            <option value="LKR">LKR - Sri Lankan Rupee</option>
-            <option value="EUR">EUR - Euro</option>
-        </select>
-    </div>
-    
-    <div class="total-display-box">
-        <p id="totalBreakdown" style="font-size: 11px; color: #666;"></p>
-        <h2 id="mergedGrandTotal">TOTAL: 0.00 USD</h2>
-    </div>
-	    <div class="footer-sections">
-        <div class="remarks">
-            <h4>Remarks / Inclusions:</h4>
-            <textarea rows="3">Subject to space and equipment availability.</textarea>
-        </div>
-        <div class="terms">
-            <h4>Terms & Conditions:</h4>
-            <small>1. Rates valid for 30 days. 2. Subject to local taxes. 3. Payment as per agreement.</small>
+        <div class="total-display-box">
+            <h2 id="mergedGrandTotal">TOTAL: 0.00 USD</h2>
         </div>
     </div>
-</div>
-</div>
-</div>
 
+    <div class="signatures">
+        <div class="sig-left">
+            <p><strong>Remarks:</strong></p>
+            <textarea rows="3" style="width: 100%; border: 1px solid #ddd; padding: 5px;">Subject to space and equipment availability.</textarea>
+        </div>
+        <div class="sig-right">
+            <p>For <strong>SEVENSEAS GLOBAL EXPRESS LOGISTICS PVT LTD</strong></p>
+            <br><br><br>
+            <p>Authorized Signatory</p>
+        </div>
+    </div>
 
+    <div class="terms-section">
+        <h4>Terms & Conditions:</h4>
+        <ol>
+            <li>THE FREIGHT RATES QUOTED ARE FOB PORT TO PORT IN CURRENCY MENTIONED ABOVE. IN ADDITION OTHER CHARGES AT ORIGIN & DESTINATION SHALL APPLY.</li>
+            <li>THE QUOTED RATES ARE BASED ON THE CURRENT APPLICABLE TARIFF AND PREVAILING SURCHARGES.</li>
+            <li>ADDITIONAL LEVIES & SURCHARGES EFFECTED AFTER ACCEPTANCE OF THE QUOTED RATES SHALL BE INFORMED TO YOU WITH ADVANCE NOTICE & SHALL BE BILLED TO YOU ACCORDINGLY.</li>
+            <li>ALL THE ORIGIN AND DESTINATION CHARGES WOULD BE CHARGED EITHER TO THE SHIPPER OR CONSIGNEE AS SPECIFIED & INSTRUCTED IN WRITING.</li>
+            <li>THE QUOTED RATES ARE EXCLUSIVE OF ORIGIN AND DESTINATION THC, PSS, GRI, BAF, CAF AND ANY OTHER PORT CHARGES UNLESS OTHERWISE SPECIFIED.</li>
+            <li>INCASE OF ANY FREIGHT RATE INCREASE, DURING THE AGREED PERIOD, THE RATES WILL BE APPLIED WITH MUTUAL AGREEMET.</li>
+            <li>THE QUOTED RATES ARE APPLICABLE ONLY FOR GENERAL, NON-HAZARDOUS CARGO, IN GAUGE CARGO.</li>
+            <li>THE QUOTED RATES FOR SPECIAL CONTAINERS LIKE HIGH CUBE, OPEN TOP, FLAT RACK, REEFER CONTAINERS-ARE SUBJECT TO AVAILABILITY OF CONTAINERS.</li>
+            <li>WHEN THE HBL/HAWB IS" TO ORDER", ORIGINAL HBL/HAWB DULY ENDORSED BY SHIPPER, CONSIGNEE'S BANK (IF INVOLVED), CHA (IF INVOLVED) BEHIND THE HBL/HAWB SHALL BE REQUIRED TO BE SUBMITTED TO CLAIM DELIVERY.</li>
+            <li>CLAIMS IF ANY, AGAINST A SHIPMENT SHOULD BE REGISTERED WITH US IN WRITING WITHIN 3 WORKING DAYS FROM TAKING DELIVERY.</li>
+            <li>CLAIMS IF ANY, SHALL BE TREATED INDEPENDENT OF OUR BILLS & SHALL BE EVALUATED APPROPRIATELY & SUITABLE ACTION WILL BE TAKEN.</li>
+            <li>ALL OUR BILLS NEEDS TO BE PAID IN FULL WITHOUT ANY DEDUCTION AS PER THE AGREED CREDIT TERMS CLAIMS IF ANY, SHOULD NOT BE ADJUSTED AGAINST OUR BILLS.</li>
+            <li>WE SHALL NOT BE RESPONSIBLE & LIABLE FOR ANY DELAY CAUSED BY PORT CONGESTION (INFRASTRUCTURAL PROBLEMS OF AIRPORT SEA PORT CONCOR ETC) & SHALL NOT ENTERTAIN ANY CLAIM CAUSED DUE TO AN EVENT BEYOND OUR CONTROL</li>
+            <li>RECEIVABLES BEYOND 15 DAYS FROM THE APPROVED CREDIT PERIOD SHALL ATTRACT INTEREST @18% PA ON THE OUTSTANDING AMOUNT.</li>
+            <li>THE ABOVE TERMS & CONDITIONS SHOULD BE READ IN CONJUNCTION WITH THE STANDARD CONDITIONS ON THE REVERSE OF THE BILLING OF LADING/ AIRWAY BILL.</li>
+        </ol>
+    </div>
+
+    <div class="footer-meta">
+        <p>Printed By: <input type="text" value="Jaine Fernandez"></p>
+        <p>Printed Date: <input type="text" id="printDateString"></p>
+    </div>
+</div>
 
 <script src="script.js"></script>
 </body>
