@@ -1,134 +1,60 @@
-function todayISO(){return new Date().toISOString().split('T')[0]}
-function addMonths(n){const d=new Date();d.setMonth(d.getMonth()+n);return d.toISOString().split('T')[0]}
+const chargeBody = document.getElementById("chargeBody");
+const totalEl = document.getElementById("grandTotal");
 
-function generateQuotationNumber(){
-  const d=new Date();
-  const yy=String(d.getFullYear()).slice(-2);
-  const mm=String(d.getMonth()+1).padStart(2,'0');
-  const rnd=String(Math.floor(Math.random()*1000)).padStart(3,'0');
-  document.getElementById('quoteNo').value=`QTN-${yy}${mm}-${rnd}`
-}
-
-function setInitialValues(){
-  document.getElementById('quoteDate').value=todayISO();
-  document.getElementById('validTill').value=addMonths(1);
-  ['clientName','clientCompany','clientAddress','clientContact','accountManager'].forEach(id=>document.getElementById(id).value='')
-}
-
-function getRates(){
-  return{
-    lkr:parseFloat(document.getElementById('rateLKR').value)||300,
-    eur:parseFloat(document.getElementById('rateEUR').value)||0.92,
-    gbp:parseFloat(document.getElementById('rateGBP').value)||0.79,
-    aed:parseFloat(document.getElementById('rateAED').value)||3.67,
-    target:document.getElementById('targetCurrency').value
-  }
-}
-
-function toUSD(amount,curr,r){
-  if(curr==='USD')return amount;
-  if(curr==='LKR')return amount/r.lkr;
-  if(curr==='EUR')return amount/r.eur;
-  if(curr==='GBP')return amount/r.gbp;
-  if(curr==='AED')return amount/r.aed;
-  return amount
-}
-
-function fromUSD(amount,curr,r){
-  if(curr==='USD')return amount;
-  if(curr==='LKR')return amount*r.lkr;
-  if(curr==='EUR')return amount*r.eur;
-  if(curr==='GBP')return amount*r.gbp;
-  if(curr==='AED')return amount*r.aed;
-  return amount
-}
-
-function calculate(){
-  const r=getRates();
-  let totalUSD=0;
-
-  document.querySelectorAll('#chargeBody tr').forEach(row=>{
-    const qty=parseFloat(row.querySelector('.qty')?.value)||1;
-    const rate=parseFloat(row.querySelector('.rate')?.value)||0;
-    const curr=row.querySelector('.curr')?.value||'USD';
-    const amount=qty*rate;
-    const amountCell=row.querySelector('.amount');
-    if(amountCell)amountCell.textContent=amount.toFixed(2);
-    totalUSD+=toUSD(amount,curr,r);
-  });
-
-  const totalTarget=fromUSD(totalUSD,r.target,r);
-  document.getElementById('grandTotal').textContent=
-    `TOTAL: ${totalTarget.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} ${r.target}`;
-  document.getElementById('breakdown').textContent=`USD Total: ${totalUSD.toFixed(2)}`;
-}
-
-function renumber(){
-  document.querySelectorAll('#chargeBody tr').forEach((row,i)=>{
-    row.querySelector('.row-no').textContent=i+1;
-  });
+function generateQuoteNo(){
+  const d = new Date();
+  return `QTN-${d.getFullYear()}-${Math.floor(Math.random()*1000)}`;
 }
 
 function addRow(){
-  const tbody=document.getElementById('chargeBody');
-  const tr=document.createElement('tr');
-  tr.innerHTML=`
-    <td class="row-no">0</td>
-    <td><input type="text" class="field-input" placeholder="Description"></td>
-    <td><input class="qty field-input" type="number" min="0" value="1" oninput="calculate()"></td>
-    <td><input type="text" class="field-input" placeholder="Unit"></td>
-    <td>
-      <select class="curr field-input select-view" onchange="calculate()">
-        <option>USD</option><option>LKR</option><option>EUR</option><option>GBP</option><option>AED</option>
-      </select>
-      <span class="print-currency"></span>
-    </td>
-    <td><input class="rate field-input" type="number" min="0" value="0" oninput="calculate()"></td>
+  const row = document.createElement("tr");
+
+  row.innerHTML = `
+    <td></td>
+    <td><input class="desc"></td>
+    <td><input type="number" class="qty" value="1"></td>
+    <td><input type="number" class="rate" value="0"></td>
     <td class="amount">0.00</td>
-    <td class="no-print"><button class="btn-del" type="button" onclick="removeRow(this)">Remove</button></td>
+    <td class="no-print"><button class="remove">X</button></td>
   `;
-  tbody.appendChild(tr);
-  renumber();
-  calculate();
+
+  chargeBody.appendChild(row);
+  update();
 }
 
-function removeRow(btn){
-  btn.closest('tr').remove();
-  renumber();
-  calculate();
-}
+function update(){
+  let total = 0;
 
-function saveRates(){
-  localStorage.setItem('rateLKR',document.getElementById('rateLKR').value);
-  localStorage.setItem('rateEUR',document.getElementById('rateEUR').value);
-  localStorage.setItem('rateGBP',document.getElementById('rateGBP').value);
-  localStorage.setItem('rateAED',document.getElementById('rateAED').value);
-}
+  document.querySelectorAll("#chargeBody tr").forEach((row,i)=>{
+    row.children[0].textContent = i+1;
 
-function loadRates(){
-  ['LKR','EUR','GBP','AED'].forEach(c=>{
-    const v=localStorage.getItem('rate'+c);
-    if(v)document.getElementById('rate'+c).value=v;
+    const qty = parseFloat(row.querySelector(".qty").value) || 0;
+    const rate = parseFloat(row.querySelector(".rate").value) || 0;
+    const amount = qty * rate;
+
+    row.querySelector(".amount").textContent = amount.toFixed(2);
+    total += amount;
   });
+
+  totalEl.textContent = `Total: ${total.toFixed(2)} USD`;
 }
 
 function resetForm(){
-  location.reload();
+  chargeBody.innerHTML = "";
+  addRow();
+  document.getElementById("quoteNo").textContent = generateQuoteNo();
 }
 
-function printQuotation(){
-  window.print();
-}
+document.addEventListener("input", update);
 
-document.addEventListener('DOMContentLoaded',()=>{
-  generateQuotationNumber();
-  setInitialValues();
-  loadRates();
-  calculate();
-  ['rateLKR','rateEUR','rateGBP','rateAED'].forEach(id=>{
-    document.getElementById(id).addEventListener('input',()=>{
-      saveRates();
-      calculate();
-    });
-  });
+document.addEventListener("click", e=>{
+  if(e.target.id==="addRowBtn") addRow();
+  if(e.target.classList.contains("remove")){
+    e.target.closest("tr").remove();
+    update();
+  }
+  if(e.target.id==="newQuote") resetForm();
+  if(e.target.id==="printBtn") window.print();
 });
+
+resetForm();
