@@ -1,278 +1,71 @@
+body { font-family: 'Arial', sans-serif; margin: 0; background: #f4f7f6; color: #000; font-size: 11px; }
+.main-content { width: 210mm; min-height: 297mm; padding: 15mm; margin: 10px auto; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); box-sizing: border-box; }
 
-body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background: #f4f7f6; color: #333; }
-.main-content { width: 210mm; min-height: 297mm; padding: 20mm; margin: 10px auto; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+/* Header Formatting */
+.quotation-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
+.quotation-header h1 { font-size: 18px; color: #000; margin: 0 0 5px 0; font-weight: bold; }
+.quotation-header p { margin: 2px 0; font-size: 11px; }
 
-/* Header / Letterhead */
-.quotation-header { display: flex; justify-content: space-between; align-items: flex-start; }
-.logo { width: 220px; margin-bottom: 10px; }
-.header-left h1 { margin: 0; color: #003366; }
-.header-right { text-align: right; }
-.title { font-size: 28px; color: #003366; margin-top: 0; }
+/* Document Title */
+.doc-title { text-align: center; margin-bottom: 15px; }
+.doc-title input { width: 100%; text-align: center; font-size: 14px; font-weight: bold; border: none; background: transparent; text-decoration: underline; }
 
-/* Grid Layout */
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 20px; }
-input, textarea, select { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px; }
+/* Grid Layout for Client and Office info */
+.info-grid { display: flex; justify-content: space-between; margin-bottom: 15px; }
+.col-left, .col-right { width: 48%; }
+.flex-row { display: flex; margin-bottom: 4px; align-items: center; }
+.flex-row.top-align { align-items: flex-start; }
+.label { font-weight: bold; width: 120px; flex-shrink: 0; font-size: 11px; }
 
-/* Table Styling */
-table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-th { background: #003366; color: white; padding: 10px; text-align: left; }
-td { border-bottom: 1px solid #eee; padding: 10px; }
-.total-section { text-align: right; margin-top: 20px; border-top: 2px solid #003366; }
+input, textarea, select { font-family: 'Arial', sans-serif; font-size: 11px; border: 1px solid #ddd; padding: 4px; border-radius: 2px; width: 100%; box-sizing: border-box; resize: none; }
+textarea { overflow: hidden; }
+.bold-text { font-weight: bold; }
 
-/* Buttons & UI */
-.sidebar { position: fixed; left: 20px; top: 20px; width: 150px; }
-.add-btn { background: #28a745; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; margin-top: 10px; }
+/* Service Information Bar */
+.service-info { background: #f0f0f0; padding: 5px; font-weight: bold; border: 1px solid #000; margin-bottom: 10px; }
+.service-info input { font-weight: bold; border: none; background: transparent; width: 100%; margin: 0; padding: 0; }
 
-/* Print Logic: This hides UI elements during PDF export */
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
+th, td { border: 1px solid #000; padding: 5px; text-align: left; }
+th { background: #e0e0e0; font-weight: bold; }
+.qty, .rate { width: 60px; text-align: right; }
+.unit-select, .curr-select { width: 80px; }
+.amount { text-align: right; font-weight: bold; width: 80px; }
+
+/* Sidebar & Buttons */
+.sidebar { position: fixed; left: 20px; top: 20px; width: 200px; background: white; padding: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+button { background: #003366; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 4px; width: 100%; margin-bottom: 10px; font-weight: bold; }
+.add-btn { background: #28a745; width: auto; margin-top: 10px; padding: 5px 15px; }
+.refresh-btn { background-color: #f44336; }
+
+/* Totals */
+.total-section { display: flex; justify-content: flex-end; margin-top: 15px; }
+.total-display-box h2 { margin: 0; font-size: 16px; border: 2px solid #000; padding: 10px; background: #e0e0e0; }
+
+/* Signatures */
+.signatures { display: flex; justify-content: space-between; margin-top: 30px; }
+.sig-left { width: 50%; }
+.sig-right { width: 40%; text-align: right; }
+
+/* Terms and Conditions */
+.terms-section { margin-top: 30px; font-size: 9px; line-height: 1.3; }
+.terms-section h4 { margin: 0 0 5px 0; font-size: 11px; text-decoration: underline; }
+.terms-section ol { margin: 0; padding-left: 20px; }
+.terms-section li { margin-bottom: 3px; }
+
+/* Footer Meta */
+.footer-meta { display: flex; justify-content: space-between; margin-top: 20px; font-size: 10px; font-weight: bold; }
+.footer-meta input { border: none; background: transparent; font-weight: bold; width: 150px; font-size: 10px;}
+
+/* Print Rules */
 @media print {
-    .no-print { display: none !important; }
-    body { background: white; }
-    .main-content { margin: 0; box-shadow: none; width: 100%; }
-    input, textarea { border: none; background: transparent; }
-}
-/* This makes small fields sit side-by-side */
-.grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-/* Make labels look professional */
-label {
-    font-size: 12px;
-    font-weight: bold;
-    color: #666;
-    display: block;
-    margin-top: 5px;
-}
-
-/* Remove borders on print so it looks like a document, not a form */
-/* --- A4 PRINT CONFIGURATION --- */
-@media print {
-    /* Set page size and margins */
-    @page {
-        size: A4;
-        margin: 15mm;
-    }
-
-    body {
-        background: white;
-        margin: 0;
-        padding: 0;
-    }
-
-    .no-print, .sidebar, .add-btn, .no-print button {
-        display: none !important;
-    }
-
-    .main-content {
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        box-shadow: none !important;
-    }
-
-    /* Keep inputs looking like clean text */
-    input, textarea, select {
-        border: none !important;
-        background: transparent !important;
-        outline: none !important;
-        padding: 2px 0 !important;
-        font-family: inherit !important;
-        font-size: 11pt !important;
-        appearance: none; /* Removes arrows from dropdowns */
-    }
-
-    /* Professional table borders for PDF */
-    table {
-        border: 1px solid #333;
-    }
+    @page { size: A4; margin: 10mm; }
+    body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .main-content { width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; }
+    .no-print, .sidebar, button { display: none !important; }
     
-    th {
-        background-color: #003366 !important;
-        color: white !important;
-        -webkit-print-color-adjust: exact; /* Ensures color shows in PDF */
-    }
-
-    td {
-        border-bottom: 1px solid #ddd !important;
-    }
-
-    /* Force the "Total" section to stay at the bottom of the page if needed */
-    .total-section {
-        border-top: 2px solid #003366 !important;
-        margin-top: 20px;
-    }
+    input, textarea, select { border: none !important; background: transparent !important; outline: none !important; padding: 0 !important; -webkit-appearance: none; appearance: none; }
+    .service-info input { background: #f0f0f0 !important; } /* Retain background for section headers */
+    textarea { height: auto !important; }
 }
-
-@media print {
-
-    @page {
-        size: A4;
-        margin: 10mm; /* Perfect A4 margin * / /* Forces the browser to ignore its own headers/footers */
-    }
-
-    html, body {
-        width: 210mm;
-        height: 297mm;
-        margin: 0;
-        padding: 0;
-        background: white;
-    }
-
-    .main-content {
-        width: 190mm; /* 210 - margins */ /* Forces the browser to ignore its own headers/footers */
-        margin: 0 auto;
-        padding: 0;
-        box-shadow: none;
-    }
-
-    /* Hide UI elements */
-    .no-print, .sidebar, button {
-        display: none !important;
-    }
-
-    /* Make inputs look like text */
-    input, textarea, select {
-        border: none !important;
-        background: transparent !important;
-        outline: none !important;
-        padding: 2px 0 !important;
-        font-size: 11pt;
-        appearance: none;
-    }
-
-    /* Table styling for PDF */
-    table {
-        width: 100%;
-        border: 1px solid #000;
-    }
-
-    th {
-        background: #003366 !important;
-        color: #fff !important;
-        -webkit-print-color-adjust: exact;
-    }
-
-    td {
-        border-bottom: 1px solid #ccc;
-    }
-
-    .total-section {
-        border-top: 2px solid #000;
-        margin-top: 20px;
-    }
-
-    .total-display-box {
-        border: 2px solid #000;
-        background: transparent !important;
-    }
-}
-
-
-
-
-#chargesTable input {
-    text-align: left;
-}
-
-#chargesTable .amount {
-    text-align: right;
-    font-weight: bold;
-    padding-right: 20px;
-}
-
-/* Make the total line look bold and professional */
-.total-section h3 {
-    background: #f8f9fa;
-    padding: 10px;
-    display: inline-block;
-    border: 1px solid #003366;
-    border-radius: 4px;
-}
-/* Styling the dropdowns for the table */
-.unit-select, .curr-select {
-    border: 1px solid #ddd;
-    padding: 5px;
-    border-radius: 4px;
-    background: white;
-    width: auto; /* Keeps them compact */
-}
-
-@media print {
-    /* Hide the dropdown arrow in the PDF */
-    select {
-        appearance: none;
-        -webkit-appearance: none;
-        border: none !important;
-        background: transparent !important;
-    }
-}
-.total-section {
-    text-align: right;
-    margin-top: 20px;
-    padding: 15px;
-    border-top: 2px solid #003366;
-    background: #fdfdfd;
-}
-
-#multiTotalContainer h3 {
-    font-size: 18px;
-    border-bottom: 1px dashed #eee;
-    padding-bottom: 5px;
-}
-
-@media print {
-    .total-section {
-        border-top: 2px solid #000 !important;
-    }
-}
-.total-section {
-    margin-top: 30px;
-    padding: 20px;
-    border-top: 2px solid #003366;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-
-.total-display-box {
-    background: #eef2f7;
-    padding: 15px 30px;
-    border: 1px solid #003366;
-    border-radius: 4px;
-    margin-top: 10px;
-}
-
-.total-display-box h2 {
-    margin: 0;
-    color: #003366;
-    font-size: 24px;
-}
-
-.total-controls {
-    margin-bottom: 10px;
-    font-size: 12px;
-}
-
-@media print {
-    .total-display-box {
-        background: transparent !important;
-        border: 2px solid #000;
-    }
-}
-.refresh-btn {
-    background-color: #f44336; /* Red */
-    color: white;
-    border: none;
-    padding: 10px;
-    width: 100%;
-    cursor: pointer;
-    font-weight: bold;
-    border-radius: 4px;
-    margin-top: 10px;
-}
-.refresh-btn:hover { background-color: #d32f2f; }
-
-
-
