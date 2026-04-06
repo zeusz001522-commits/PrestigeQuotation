@@ -1,121 +1,340 @@
-<!DOCTYPE html>
+!DOCTYPE html>
+
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Sevenseas - Freight Quotation</title>
-    <link rel="stylesheet" href="style.css">
+
+<meta charset="UTF-8">
+
+<title>FreightQ - Quotation Generator</title>
+
+<link rel="stylesheet" href="style.css">
+
 </head>
+
+
 <body>
 
+
+
 <div class="no-print sidebar">
-    <h2>FreightQ</h2>
-    <div class="currency-panel">
-        <label>1 USD = <input type="number" id="rateLKR" value="300" oninput="calculate()"> LKR</label>
-        <label>1 USD = <input type="number" id="rateEUR" value="0.92" oninput="calculate()"> EUR</label>
-    </div>
-    <hr>
-    <label>Show Grand Total In:</label>
-    <select id="finalCurrencySelector" onchange="calculate()">
-        <option value="USD">USD</option>
-        <option value="LKR">LKR</option>
-        <option value="EUR">EUR</option>
-    </select>
-    <button onclick="printQuotation()" class="print-btn">Print to PDF</button>
-    <button class="refresh-btn" onclick="location.reload()">New Quotation</button>
+
+<h2>FreightQ</h2>
+
+<button onclick="printQuotation()">Print to PDF</button>
+
 </div>
+
 
 <div class="main-content">
-    <header class="company-header">
-        <h1>SEVENSEAS GLOBAL EXPRESS LOGISTICS PRIVATE LIMITED</h1>
-        <p>Reg Off: Trifecta Adatto | 13th floor B Wing | 66/2,67/1 | ITPL Main Rd | Garudachar Palya | Mahadevapura Post | Bengaluru | 560048</p>
-        <p>T: +91 80 42694000 | E-Mail: info@sevenseasexpress.com | Web: www.sevenseasexpress.com</p>
-    </header>
 
-    <div class="doc-title">
-        <input type="text" value="QUOTATION FOR SEA FREIGHT EXPORT LCL">
-    </div>
+<header class="quotation-header">
 
-    <div class="info-grid">
-        <div class="col">
-            <div class="row"><span class="lbl">To:</span> <textarea id="clientCompany" class="bold-text">PRESTIGE INTERNATIONAL LOGISTICS (PVT) LTD.</textarea></div>
-            <div class="row"><span class="lbl"></span> <textarea id="clientAddress">No. 70 3/1, 3rd Floor, Jethawana road, Colombo 14, Sri Lanka</textarea></div>
-            <div class="row"><span class="lbl">PH:</span> <input type="text" placeholder="Phone Number"></div>
-            <div class="row"><span class="lbl">Fax:</span> <input type="text" value="+9411 2470033"></div>
-            <div class="row"><span class="lbl">Attn:</span> <input type="text" value="Duleeka"></div>
-        </div>
-        <div class="col">
-            <div class="row"><span class="lbl">Issuing Office:</span> <textarea rows="4">COCHIN, 2nd FLOOR Pearl arcade, T D Road, Ernakulam, Pin-682035, Kerala</textarea></div>
-            <div class="row"><span class="lbl">Acc Manager:</span> <input type="text" value="Agent.Namination.Cok"></div>
-            <div class="row"><span class="lbl">Valid Till:</span> <input type="date" id="validTill"></div>
-            <div class="row"><span class="lbl">Quote No #:</span> <input type="text" id="qtnNo"></div>
-            <div class="row"><span class="lbl">Date:</span> <input type="date" id="qtnDate"></div>
-        </div>
-    </div>
+<div class="header-left">
 
-    <div class="service-bar">
-        SERVICE INFORMATION - SEA FREIGHT EXPORT LCL / Ex-Works / Local Charges
-    </div>
+<img src="logo.png" alt="Company Logo" class="logo">
 
-    <table id="chargesTable">
-        <thead>
-            <tr>
-                <th>Origin</th>
-                <th>Item / Description</th>
-                <th>Remarks</th>
-                <th width="50">Qty</th>
-                <th width="80">UOM</th>
-                <th width="60">Curr</th>
-                <th width="80">Rate</th>
-                <th width="100">Amount</th>
-                <th class="no-print"></th>
-            </tr>
-        </thead>
-        <tbody id="tableBody">
-            <tr>
-                <td><input type="text" value="Cochin"></td>
-                <td><input type="text" value="OCEAN FREIGHT EXPORT"></td>
-                <td><input type="text" value="INCLUSIVE OF DTHC"></td>
-                <td><input type="number" class="qty" value="1" oninput="calculate()"></td>
-                <td><select class="unit-select"><option>CBM</option><option>Cont</option><option>Kgs</option><option>BL</option></select></td>
-                <td><select class="curr-select" onchange="calculate()"><option value="USD">USD</option><option value="LKR">LKR</option></select></td>
-                <td><input type="number" class="rate" value="27.00" oninput="calculate()"></td>
-                <td class="amount">0.00</td>
-                <td class="no-print"><button onclick="removeRow(this)">✖</button></td>
-            </tr>
-        </tbody>
-    </table>
-    
-    <button class="no-print add-btn" onclick="addRow()">+ Add Charge Row</button>
+<h1>PRESTIGE INTERNATIONAL LOGISTICS (PVT) LTD</h1>
 
-    <div class="total-wrap">
-        <div class="total-box">
-            <h2 id="mergedGrandTotal">TOTAL: 0.00 USD</h2>
-        </div>
-    </div>
+<p>No. 70 3/1 | 3rd Floor | Jethawana Road | Colombo 14 | Sri Lanka</p>
 
-    <div class="footer-sign">
-        <div class="remarks-area">
-            <strong>Remarks:</strong>
-            <textarea rows="3">Subject to space and equipment availability.</textarea>
-        </div>
-        <div class="sign-area">
-            <p>For <strong>SEVENSEAS GLOBAL EXPRESS LOGISTICS PVT LTD</strong></p>
-            <div class="space"></div>
-            <p>Authorized Signatory</p>
-        </div>
-    </div>
+<p>Email: mkt.prestige@pilcmb.com | Web: www.pilcmb.com</p>
 
-    <div class="terms-block">
-        <h4>Terms & Conditions:</h4>
-        <ol>
-            <li>Rates quoted are FOB Port to Port.</li>
-            <li>Subject to prevailing surcharges at time of shipping.</li>
-            <li>Valid for General, Non-Hazardous cargo only.</li>
-            <li>Receivables beyond 15 days attract 18% PA interest.</li>
-        </ol>
-    </div>
 </div>
 
+<div class="header-right">
+
+<h2 class="title">QUOTATION</h2>
+
+<div class="doc-info">
+
+<p><strong>Ref No:</strong> <input type="text" id="qtnNo" value="QTN-2026-001"></p>
+
+<p><strong>Date:</strong> <input type="date" id="qtnDate"></p>
+
+<button class="no-print app-btn refresh-btn" onclick="location.reload()">
+
+Reset / New Quotation
+
+</button>
+
+</div>
+
+</div>
+
+</header>
+
+
+<hr>
+
+
+<div class="section grid">
+
+<div class="col">
+
+<h3>Bill To (Client)</h3>
+
+<div class="input-group">
+
+<label>Contact Name *</label>
+
+<input type="text" id="clientContact" placeholder="e.g. John Doe">
+
+</div>
+
+<div class="input-group">
+
+<label>Company Name</label>
+
+<input type="text" id="clientCompany" placeholder="e.g. Global Trade Ltd">
+
+</div>
+
+<div class="input-group">
+
+<label>Address</label>
+
+<textarea id="clientAddress" rows="2" placeholder="Street, City, Country"></textarea>
+
+</div>
+
+<div class="input-group grid-2">
+
+<div>
+
+<label>Phone</label>
+
+<input type="text" placeholder="+94 ...">
+
+</div>
+
+<div>
+
+<label>Email</label>
+
+<input type="email" placeholder="client@email.com">
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col">
+
+<h3>Shipment Details</h3>
+
+<div class="input-group">
+
+<label>Origin:</label> <input type="text" placeholder="Port of Loading">
+
+</div>
+
+<div class="input-group">
+
+<label>Destination:</label> <input type="text" placeholder="Port of Discharge">
+
+</div>
+
+<div class="input-group">
+
+<label>Mode:</label>
+
+<select>
+
+<option>Sea / FCL</option>
+
+<option>Sea / LCL</option>
+
+<option>Air Freight</option>
+
+</select>
+
+</div>
+
+<div class="input-group">
+
+<label>Base Currency:</label>
+
+<select id="baseCurrency">
+
+<option value="USD">USD - US Dollar</option>
+
+<option value="LKR">LKR - Sri Lankan Rupee</option>
+
+<option value="EUR">EUR - Euro</option>
+
+<option value="GBP">GBP - British Pound</option>
+
+<option value="AED">AED - UAE Dirham</option>
+
+</select>
+
+<div class="no-print currency-rates" style="background: #eef2f7; padding: 15px; margin-bottom: 20px; border-radius: 8px;">
+
+<h4>Daily Exchange Rates (Base: 1 USD)</h4>
+
+<div style="display: flex; gap: 20px;">
+
+<label>1 USD = <input type="number" id="rateLKR" value="300" oninput="calculate()"> LKR</label>
+
+<label>1 USD = <input type="number" id="rateEUR" value="0.92" oninput="calculate()"> EUR</label>
+
+</div>
+
+<small>*These rates are used to calculate the Grand Total in USD.</small>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<table id="chargesTable">
+
+<thead>
+
+<tr>
+
+<th>Description</th>
+
+<th>Qty</th>
+
+<th>Unit</th>
+
+<th>Rate</th>
+
+<th>Amount</th>
+
+<th class="no-print">Action</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tableBody">
+
+<tr>
+
+<td><input type="text" value="Ocean Freight"></td>
+
+<td><input type="number" class="qty" value="1" oninput="calculate()"></td>
+
+<td>
+
+<select class="unit-select">
+
+<option value="Cont">Container</option>
+
+<option value="Kgs">Kgs</option>
+
+<option value="CBM">CBM</option>
+
+<option value="BL">B/L</option>
+
+<option value="Doc">Doc</option>
+
+<option value="Shipment">Shipment</option>
+
+<option value="20GP">20GP</option>
+
+<option value="40GP">40GP</option>
+
+<option value="Hour">Hour</option>
+
+</select>
+
+</td>
+
+<td>
+
+<select class="curr-select">
+
+<option value="USD">USD</option>
+
+<option value="LKR">LKR</option>
+
+<option value="EUR">EUR</option>
+
+</select>
+
+</td>
+
+<td><input type="number" class="rate" value="0" oninput="calculate()"></td>
+
+<td class="amount">0.00</td>
+
+<td class="no-print"><button onclick="removeRow(this)">✖</button></td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+<button class="no-print add-btn" onclick="addRow()">+ Add Charge Row</button>
+
+
+<div class="total-section">
+
+<div class="total-controls no-print">
+
+<label>Show Grand Total In:</label>
+
+<select id="finalCurrencySelector" onchange="calculate()">
+
+<option value="USD">USD - US Dollar</option>
+
+<option value="LKR">LKR - Sri Lankan Rupee</option>
+
+<option value="EUR">EUR - Euro</option>
+
+</select>
+
+</div>
+
+<div class="total-display-box">
+
+<p id="totalBreakdown" style="font-size: 11px; color: #666;"></p>
+
+<h2 id="mergedGrandTotal">TOTAL: 0.00 USD</h2>
+
+</div>
+
+<div class="footer-sections">
+
+<div class="remarks">
+
+<h4>Remarks / Inclusions:</h4>
+
+<textarea rows="3">Subject to space and equipment availability.</textarea>
+
+</div>
+
+<div class="terms">
+
+<h4>Terms & Conditions:</h4>
+
+<small>1. Rates valid for 30 days. 2. Subject to local taxes. 3. Payment as per agreement.</small>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
 <script src="script.js"></script>
+
 </body>
-</html>
+
+</html>" 
