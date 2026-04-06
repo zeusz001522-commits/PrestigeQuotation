@@ -12,11 +12,7 @@ function generateQuotationNumber(){
 function setInitialValues(){
   document.getElementById('quoteDate').value=todayISO();
   document.getElementById('validTill').value=addMonths(1);
-  document.getElementById('clientName').value='';
-  document.getElementById('clientCompany').value='';
-  document.getElementById('clientAddress').value='';
-  document.getElementById('clientContact').value='';
-  document.getElementById('accountManager').value='';
+  ['clientName','clientCompany','clientAddress','clientContact','accountManager'].forEach(id=>document.getElementById(id).value='')
 }
 
 function getRates(){
@@ -58,19 +54,19 @@ function calculate(){
     const amount=qty*rate;
     const amountCell=row.querySelector('.amount');
     if(amountCell)amountCell.textContent=amount.toFixed(2);
-    totalUSD+=toUSD(amount,curr,r)
+    totalUSD+=toUSD(amount,curr,r);
   });
 
   const totalTarget=fromUSD(totalUSD,r.target,r);
   document.getElementById('grandTotal').textContent=
     `TOTAL: ${totalTarget.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} ${r.target}`;
-  document.getElementById('breakdown').textContent=`USD Total: ${totalUSD.toFixed(2)}`
+  document.getElementById('breakdown').textContent=`USD Total: ${totalUSD.toFixed(2)}`;
 }
 
 function renumber(){
   document.querySelectorAll('#chargeBody tr').forEach((row,i)=>{
-    row.querySelector('.row-no').textContent=i+1
-  })
+    row.querySelector('.row-no').textContent=i+1;
+  });
 }
 
 function addRow(){
@@ -78,49 +74,50 @@ function addRow(){
   const tr=document.createElement('tr');
   tr.innerHTML=`
     <td class="row-no">0</td>
-    <td><input type="text" placeholder="Description"></td>
-    <td><input class="qty" type="number" min="0" value="1" oninput="calculate()"></td>
-    <td><input type="text" placeholder="Unit"></td>
+    <td><input type="text" class="field-input" placeholder="Description"></td>
+    <td><input class="qty field-input" type="number" min="0" value="1" oninput="calculate()"></td>
+    <td><input type="text" class="field-input" placeholder="Unit"></td>
     <td>
-      <select class="curr" onchange="calculate()">
+      <select class="curr field-input select-view" onchange="calculate()">
         <option>USD</option><option>LKR</option><option>EUR</option><option>GBP</option><option>AED</option>
       </select>
+      <span class="print-currency"></span>
     </td>
-    <td><input class="rate" type="number" min="0" value="0" oninput="calculate()"></td>
+    <td><input class="rate field-input" type="number" min="0" value="0" oninput="calculate()"></td>
     <td class="amount">0.00</td>
     <td class="no-print"><button class="btn-del" type="button" onclick="removeRow(this)">Remove</button></td>
   `;
   tbody.appendChild(tr);
   renumber();
-  calculate()
+  calculate();
 }
 
 function removeRow(btn){
   btn.closest('tr').remove();
   renumber();
-  calculate()
+  calculate();
 }
 
 function saveRates(){
   localStorage.setItem('rateLKR',document.getElementById('rateLKR').value);
   localStorage.setItem('rateEUR',document.getElementById('rateEUR').value);
   localStorage.setItem('rateGBP',document.getElementById('rateGBP').value);
-  localStorage.setItem('rateAED',document.getElementById('rateAED').value)
+  localStorage.setItem('rateAED',document.getElementById('rateAED').value);
 }
 
 function loadRates(){
   ['LKR','EUR','GBP','AED'].forEach(c=>{
     const v=localStorage.getItem('rate'+c);
-    if(v)document.getElementById('rate'+c).value=v
-  })
+    if(v)document.getElementById('rate'+c).value=v;
+  });
 }
 
 function resetForm(){
-  location.reload()
+  location.reload();
 }
 
 function printQuotation(){
-  window.print()
+  window.print();
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
@@ -128,10 +125,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   setInitialValues();
   loadRates();
   calculate();
-  ['rateLKR','rateEUR','rateGBP','rateAED'].forEach(id=>
+  ['rateLKR','rateEUR','rateGBP','rateAED'].forEach(id=>{
     document.getElementById(id).addEventListener('input',()=>{
       saveRates();
-      calculate()
-    })
-  )
+      calculate();
+    });
+  });
 });
