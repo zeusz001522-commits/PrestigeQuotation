@@ -71,6 +71,6 @@ th, td{
   font-weight:bold;
 }
 
-@media(max-width:768px){
+@media(max-width:76px){
   .page{padding:10px}
 }
