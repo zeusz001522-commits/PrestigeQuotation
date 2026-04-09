@@ -1,76 +1,517 @@
-:root{
-  --primary:#0b2d4d;
-  --accent:#1f7ae0;
-  --bg:#f4f7fb;
+:root {
+  --bg: #eef2f7;
+  --surface: #ffffff;
+  --primary: #133a66;
+  --primary-soft: #eaf2fc;
+  --text: #1f2a37;
+  --muted: #6b7280;
+  --border: #dde3eb;
 }
 
-body{
-  margin:0;
-  font-family: 'Segoe UI', sans-serif;
-  background:var(--bg);
+body {
+  background: linear-gradient(160deg, #eef2f7 0%, #e8f0fb 100%);
+  color: var(--text);
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
 }
 
-.page{
-  max-width:900px;
-  margin:20px auto;
-  background:#fff;
-  padding:20px;
-  border-radius:10px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.1);
+.app-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  animation: fadeInUp 0.35s ease;
 }
 
-.toolbar{
-  display:flex;
-  justify-content:space-between;
-  padding:12px;
-  background:var(--primary);
-  color:#fff;
+.app-header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
-.btn{
-  padding:10px 14px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
+.logo-placeholder {
+  width: 76px;
+  height: auto;
+  border: 2px dashed #9fb3ca;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #3f4f63;
+  background: #f7fafd;
 }
 
-.btn-primary{background:var(--accent);color:#fff}
-.btn-light{background:#fff;color:#000}
-.btn-success{background:#28a745;color:#fff}
-
-.panel{
-  border:1px solid #ddd;
-  padding:15px;
-  border-radius:8px;
-  margin-top:10px;
+.app-logo {
+  width: 76px;
+  height: auto;
+  object-fit: contain;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
 }
 
-input, textarea, select{
-  width:100%;
-  margin-top:6px;
-  padding:8px;
-  border:1px solid #ccc;
-  border-radius:5px;
+.card-section {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 8px 24px rgba(19, 58, 102, 0.06);
 }
 
-table{
-  width:100%;
-  margin-top:10px;
-  border-collapse:collapse;
+.section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 1rem;
 }
 
-th, td{
-  border:1px solid #ddd;
-  padding:8px;
+.form-label {
+  font-weight: 600;
+  color: #374151;
 }
 
-.total-panel{
-  text-align:right;
-  font-size:22px;
-  margin-top:15px;
-  font-weight:bold;
+.form-control,
+.form-select {
+  border-color: #ced7e2;
 }
 
-@media(max-width:76px){
-  .page{padding:10px}
+.form-control#email,
+.form-control#phone,
+.form-control#fax {
+  font-size: 1.05rem;
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #7da5d6;
+  box-shadow: 0 0 0 0.25rem rgba(19, 58, 102, 0.15);
+}
+
+#itemsTable thead th {
+  background: #f5f8fc;
+  color: #334155;
+  border-bottom-width: 1px;
+}
+
+#itemsTable td,
+#itemsTable th {
+  vertical-align: middle;
+}
+
+.preview-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 10px 28px rgba(19, 58, 102, 0.08);
+  animation: fadeIn 0.3s ease;
+}
+
+.pdf-sheet {
+  border: 1px solid #dbe2ea;
+  border-radius: 10px;
+  box-sizing: border-box;
+  width: 210mm;
+  min-height: auto;
+  max-width: 100%;
+  padding: 12mm;
+  margin: 0 auto;
+  background: #fff;
+}
+
+.pdf-a4 {
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #1f2a37;
+}
+
+.pdf-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-bottom: 1px solid #dbe2ea;
+  padding-bottom: 0.55rem;
+}
+
+.pdf-logo {
+  width: 76px;
+  height: auto;
+  border: 1px solid #b8c7d9;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: #4b5563;
+  background: #f7f9fc;
+}
+
+.pdf-logo-img {
+  width: 76px;
+  height: auto;
+  object-fit: contain;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.pdf-company {
+  color: #1f3d63;
+  margin: 0 0 2px;
+  font-size: 19px;
+  line-height: 1.2;
+}
+
+.pdf-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 0.55rem;
+}
+
+.pdf-two-col {
+  gap: 8mm;
+}
+
+.pdf-col {
+  min-width: 0;
+}
+
+.pdf-meta-grid h6 {
+  margin-bottom: 0.25rem;
+  color: #1f3d63;
+  font-size: 13.5px;
+}
+
+.pdf-meta-grid p {
+  margin-bottom: 0.1rem;
+  font-size: 11.5px;
+  line-height: 1.3;
+}
+
+.pdf-muted {
+  color: #6b7280;
+  margin: 0;
+  font-size: 12px;
+}
+
+.pdf-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 5mm;
+  table-layout: fixed;
+  font-size: 11.5px;
+}
+
+.pdf-table th,
+.pdf-table td {
+  border: 1px solid #dbe2ea;
+  padding: 4px 5px;
+  vertical-align: top;
+  word-break: break-word;
+}
+
+.pdf-table th {
+  background: #f5f8fc;
+  color: #334155;
+  font-weight: 700;
+}
+
+.pdf-col-index {
+  width: 8%;
+}
+
+.pdf-col-desc {
+  width: 40%;
+}
+
+.pdf-col-qty {
+  width: 10%;
+}
+
+.pdf-col-currency {
+  width: 12%;
+}
+
+.pdf-col-rate {
+  width: 15%;
+}
+
+.pdf-col-total {
+  width: 15%;
+}
+
+.pdf-right {
+  text-align: right;
+}
+
+.pdf-total {
+  text-align: right;
+  margin-top: 5mm;
+}
+
+.pdf-total h5 {
+  margin: 0 0 2px;
+  font-size: 14px;
+}
+
+.pdf-terms {
+  margin-top: 6mm;
+  border-top: 1px solid #dbe2ea;
+  padding-top: 3mm;
+}
+
+.pdf-terms h6 {
+  margin: 0 0 3px;
+  font-size: 13px;
+  color: #1f3d63;
+}
+
+.pdf-terms p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #1f2a37;
+}
+
+/* Quotation layout (matches corporate PDF style) */
+.quot-top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10mm;
+  margin-bottom: 0.65rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid #dbe2ea;
+}
+
+.quot-company-top {
+  flex: 1;
+  min-width: 0;
+}
+
+.quot-company-name {
+  margin: 0 0 2px;
+  font-weight: 800;
+  font-size: 12px;
+  line-height: 1.2;
+  color: #133a66;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.quot-company-line {
+  margin: 0;
+  font-size: 9.5px;
+  line-height: 1.3;
+  color: #334155;
+}
+
+.quot-top-logo {
+  flex: 0 0 auto;
+}
+
+.quot-top-logo-img {
+  width: 39mm;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin-top: 1mm;
+}
+
+.quotation-preview .quot-head-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid #dbe2ea;
+  padding-bottom: 0.5rem;
+}
+
+.quot-to-block {
+  flex: 1;
+  min-width: 0;
+}
+
+.quot-to {
+  margin: 0 0 0.25rem;
+  font-size: 11px;
+}
+
+.quot-line {
+  margin: 0;
+  font-size: 11px;
+  color: #374151;
+}
+
+.quot-title-block {
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: 0.06em;
+  color: #111827;
+  align-self: center;
+}
+
+.service-info-line {
+  font-size: 10px;
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+  line-height: 1.35;
+  color: #111827;
+}
+
+.quot-attn {
+  margin: 0 0 0.75rem;
+  font-size: 11px;
+}
+
+.quot-label {
+  font-weight: 600;
+}
+
+.quot-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0.75rem 0 0.35rem;
+  color: #111827;
+}
+
+.quot-table-basic,
+.quot-table-local {
+  font-size: 10px;
+}
+
+.quot-table-basic .w-sl,
+.quot-table-local .w-sl {
+  width: 8%;
+}
+
+.quot-table-basic .w-uom,
+.quot-table-local .w-uom {
+  width: 12%;
+}
+
+.quot-table-basic .w-curr,
+.quot-table-local .w-curr {
+  width: 12%;
+}
+
+.quot-table-basic .w-rate,
+.quot-table-local .w-rate {
+  width: 18%;
+}
+
+.quot-table-local .w-rem {
+  width: 18%;
+}
+
+.quot-grand {
+  margin-top: 0.6rem;
+  text-align: right;
+}
+
+.quot-gen {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 9px;
+}
+
+.quot-terms .terms-cap {
+  font-weight: 700;
+  font-size: 10px;
+  margin: 0.75rem 0 0.35rem;
+}
+
+.quot-terms .terms-body {
+  font-size: 8px;
+  line-height: 1.35;
+  text-transform: uppercase;
+  color: #1f2937;
+}
+
+.quot-company-footer {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #dbe2ea;
+  font-size: 8.5px;
+  line-height: 1.35;
+  color: #374151;
+}
+
+.quot-company-footer p {
+  margin: 0 0 0.15rem;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 767px) {
+  .app-card {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .pdf-meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pdf-sheet {
+    width: 100%;
+    min-height: auto;
+    padding: 1rem;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  .no-print,
+  .btn,
+  #previewSection > .d-flex {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+  }
+
+  .container,
+  .app-card,
+  .preview-card {
+    max-width: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #pdfContent {
+    display: block !important;
+  }
 }
