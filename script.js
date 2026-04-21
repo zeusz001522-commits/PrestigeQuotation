@@ -3,6 +3,7 @@ const form = document.getElementById("businessForm");
 const itemsBody = document.getElementById("itemsBody");
 const previewSection = document.getElementById("previewSection");
 const pdfContent = document.getElementById("pdfContent");
+const grandTotalEl = document.getElementById("grandTotal");
 
 const addItemBtn = document.getElementById("addItemBtn");
 const previewBtn = document.getElementById("previewBtn");
@@ -23,7 +24,11 @@ const currencyInput = document.getElementById("currency");
 const priorityInput = document.getElementById("priority");
 const shipmentTypeInput = document.getElementById("shipmentType");
 const termsInput = document.getElementById("terms");
-const UNIT_OPTIONS = ["BL", "M3", "W/M", "KG", "20HC", "40HC", "SHIPMENT"];
+const exRateUsdInput = document.getElementById("exRateUSD");
+const exRateLkrInput = document.getElementById("exRateLKR");
+const exRateEurInput = document.getElementById("exRateEUR");
+const exToCurrencyEls = Array.from(document.querySelectorAll(".ex-to-currency"));
+const UNIT_OPTIONS = ["BL", "M3", "W/M", "KG", "20HC", "40HC", '20"RF', '40"RF', "SHIPMENT"];
 const CHARGE_TYPES = {
   FREIGHT: "Freight Rate",
   LOCAL: "Local Charges",
@@ -104,6 +109,70 @@ function formatAmount(amount, currencyCode) {
   }).format(Number(amount) || 0);
 }
 
+function setExchangeRateCurrencyLabels(shipmentCurrency) {
+  const label = shipmentCurrency || "—";
+  exToCurrencyEls.forEach((el) => {
+    el.textContent = label;
+  });
+}
+
+function getExchangeRatesFromForm(shipmentCurrency) {
+  const cur = shipmentCurrency || currencyInput?.value || "USD";
+  const rates = {
+    USD: Number(exRateUsdInput?.value) || 0,
+    LKR: Number(exRateLkrInput?.value) || 0,
+    EUR: Number(exRateEurInput?.value) || 0,
+  };
+  // Ensure the selected shipment currency converts to itself.
+  rates[cur] = 1;
+  return rates;
+}
+
+function computeGrandTotals(items) {
+  const totalsByCurrency = new Map();
+  (items || []).forEach((it) => {
+    const currency = it.currency || "USD";
+    const value = Number(it.rate) || 0;
+    totalsByCurrency.set(currency, (totalsByCurrency.get(currency) || 0) + value);
+  });
+  return totalsByCurrency;
+}
+
+function formatGrandTotalDisplay(totalsByCurrency) {
+  if (!totalsByCurrency || totalsByCurrency.size === 0) {
+    return "—";
+  }
+  if (totalsByCurrency.size === 1) {
+    const [currency, total] = Array.from(totalsByCurrency.entries())[0];
+    return formatAmount(total, currency);
+  }
+  return Array.from(totalsByCurrency.entries())
+    .map(([currency, total]) => `${currency} ${formatAmount(total, currency).replace(/[^\d.,\-]+/g, "").trim()}`)
+    .join(" + ");
+}
+
+function computeGrandTotalValue(items) {
+  return (items || []).reduce((sum, it) => sum + (Number(it.rate) || 0), 0);
+}
+
+function computeGrandTotalInShipmentCurrency(items, shipmentCurrency, exchangeRates) {
+  const shipCur = shipmentCurrency || "USD";
+  const rates = exchangeRates || {};
+  return (items || []).reduce((sum, it) => {
+    const fromCur = it.currency || shipCur;
+    const amount = Number(it.rate) || 0;
+    if (fromCur === shipCur) {
+      return sum + amount;
+    }
+    const rate = Number(rates[fromCur]) || 0;
+    if (rate <= 0) {
+      // If user hasn't provided a usable exchange rate, fall back to raw amount.
+      return sum + amount;
+    }
+    return sum + amount * rate;
+  }, 0);
+}
+
 function applyShipmentCurrencyToItems() {
   const selectedCurrency = currencyInput?.value || "USD";
   itemsBody.querySelectorAll(".item-currency").forEach((currencySelect) => {
@@ -117,9 +186,10 @@ function addItemRow(item = {}) {
   const defaultType = existingRowCount === 0 ? CHARGE_TYPES.FREIGHT : CHARGE_TYPES.LOCAL;
   const itemType = item.type || defaultType;
 
-  const unitOptionsHtml = UNIT_OPTIONS.map(
-    (unit) => `<option value="${unit}" ${item.unit === unit ? "selected" : ""}>${unit}</option>`
-  ).join("");
+  const unitOptionsHtml = UNIT_OPTIONS.map((unit) => {
+    const safeUnit = sanitizeHtml(unit);
+    return `<option value="${safeUnit}" ${item.unit === unit ? "selected" : ""}>${safeUnit}</option>`;
+  }).join("");
   const itemCurrency = item.currency || currencyInput?.value || "USD";
   const currencyOptionsHtml = ["USD", "LKR", "EUR"]
     .map((currency) => `<option value="${currency}" ${itemCurrency === currency ? "selected" : ""}>${currency}</option>`)
@@ -171,6 +241,9 @@ function addItemRow(item = {}) {
 
 function recalculateTotals() {
   const rows = Array.from(itemsBody.querySelectorAll("tr"));
+  const shipmentCurrency = currencyInput?.value || "USD";
+  const exchangeRates = getExchangeRatesFromForm(shipmentCurrency);
+  const items = [];
 
   rows.forEach((row, index) => {
     const currencyInput = row.querySelector(".item-currency");
@@ -184,7 +257,13 @@ function recalculateTotals() {
 
     indexCell.textContent = String(index + 1);
     totalCell.textContent = formatAmount(lineTotal, rowCurrency);
+    items.push({ currency: rowCurrency, rate: lineTotal });
   });
+
+  if (grandTotalEl) {
+    const grandTotalValue = computeGrandTotalInShipmentCurrency(items, shipmentCurrency, exchangeRates);
+    grandTotalEl.textContent = formatAmount(grandTotalValue, shipmentCurrency);
+  }
 }
 
 function getItemsData() {
@@ -198,6 +277,7 @@ function getItemsData() {
 }
 
 function getFormData() {
+  const shipmentCurrency = currencyInput.value;
   return {
     ref: formRefEl.textContent,
     name: nameInput.value.trim(),
@@ -209,7 +289,8 @@ function getFormData() {
     deliveryDate: deliveryDateInput.value,
     shipmentMode: shipmentModeInput.value,
     incoterms: incotermsInput.value,
-    currency: currencyInput.value,
+    currency: shipmentCurrency,
+    exchangeRates: getExchangeRatesFromForm(shipmentCurrency),
     priority: priorityInput.value,
     shipmentType: shipmentTypeInput.value,
     terms: termsInput.value.trim(),
@@ -304,6 +385,10 @@ function buildPreviewHtml(data) {
     // Backward-compatible: old saved data had no `type`.
     type: it.type || (idx === 0 ? CHARGE_TYPES.FREIGHT : CHARGE_TYPES.LOCAL),
   }));
+
+  const shipCur = data.currency || "USD";
+  const grandTotalValue = computeGrandTotalInShipmentCurrency(items, shipCur, data.exchangeRates || {});
+  const grandTotalDisplay = formatAmount(grandTotalValue, shipCur);
 
   const freightItems = items.filter((it) => it.type === CHARGE_TYPES.FREIGHT);
   const localItems = items.filter((it) => it.type === CHARGE_TYPES.LOCAL);
@@ -411,6 +496,8 @@ function buildPreviewHtml(data) {
       </table>
 
       <div class="pdf-total quot-grand">
+        <span class="quot-label">Grand Total:</span> <strong>${sanitizeHtml(grandTotalDisplay)}</strong>
+        <br />
         <span class="pdf-muted quot-gen">Incoterms: ${sanitizeHtml(data.incoterms)} | Priority: ${sanitizeHtml(data.priority)}</span>
       </div>
 
@@ -453,6 +540,11 @@ function loadFromLocalStorage() {
     shipmentModeInput.value = data.shipmentMode || "";
     incotermsInput.value = data.incoterms || "";
     currencyInput.value = data.currency || "USD";
+    setExchangeRateCurrencyLabels(currencyInput.value || "USD");
+    const ex = data.exchangeRates || {};
+    if (exRateUsdInput) exRateUsdInput.value = ex.USD ?? 1;
+    if (exRateLkrInput) exRateLkrInput.value = ex.LKR ?? 1;
+    if (exRateEurInput) exRateEurInput.value = ex.EUR ?? 1;
     priorityInput.value = data.priority || "Normal";
     shipmentTypeInput.value = data.shipmentType || "";
     termsInput.value = data.terms || DEFAULT_TERMS;
@@ -477,6 +569,10 @@ function resetFormData() {
   formRefEl.textContent = createReferenceId();
   requestDateInput.value = getTodayDate();
   currencyInput.value = "USD";
+  setExchangeRateCurrencyLabels("USD");
+  if (exRateUsdInput) exRateUsdInput.value = 1;
+  if (exRateLkrInput) exRateLkrInput.value = 1;
+  if (exRateEurInput) exRateEurInput.value = 1;
   termsInput.value = DEFAULT_TERMS;
   itemsBody.innerHTML = "";
   addItemRow();
@@ -519,6 +615,9 @@ async function downloadPdf() {
   }));
   const freightItems = items.filter((it) => it.type === CHARGE_TYPES.FREIGHT);
   const localItems = items.filter((it) => it.type === CHARGE_TYPES.LOCAL);
+  const shipCur = data.currency || "USD";
+  const grandTotalValue = computeGrandTotalInShipmentCurrency(items, shipCur, data.exchangeRates || {});
+  const grandTotalDisplay = formatAmount(grandTotalValue, shipCur);
 
   const rowCur = (item) => item.currency || data.currency || "USD";
 
@@ -685,6 +784,8 @@ async function downloadPdf() {
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
+  doc.text(`Grand Total: ${grandTotalDisplay}`, pageWidth - margin, y, { align: "right" });
+  y += 5;
   doc.text(`Incoterms: ${data.incoterms} | Priority: ${data.priority}`, pageWidth - margin, y, { align: "right" });
   y += 8;
 
@@ -748,7 +849,10 @@ function attachEventListeners() {
   });
 
   form.addEventListener("input", (event) => {
-    if (["item-desc", "item-unit", "item-currency", "item-rate"].some((cls) => event.target.classList.contains(cls))) {
+    if (
+      ["item-desc", "item-unit", "item-currency", "item-rate"].some((cls) => event.target.classList.contains(cls)) ||
+      ["exRateUSD", "exRateLKR", "exRateEUR"].includes(event.target.id)
+    ) {
       recalculateTotals();
     }
     saveToLocalStorage();
@@ -756,6 +860,7 @@ function attachEventListeners() {
 
   form.addEventListener("change", (event) => {
     if (event.target.id === "currency") {
+      setExchangeRateCurrencyLabels(currencyInput.value || "USD");
       applyShipmentCurrencyToItems();
       recalculateTotals();
     } else if (event.target.classList.contains("item-currency")) {
@@ -794,6 +899,10 @@ function init() {
   if (!restored) {
     requestDateInput.value = getTodayDate();
     currencyInput.value = "USD";
+    setExchangeRateCurrencyLabels("USD");
+    if (exRateUsdInput) exRateUsdInput.value = 1;
+    if (exRateLkrInput) exRateLkrInput.value = 1;
+    if (exRateEurInput) exRateEurInput.value = 1;
     termsInput.value = DEFAULT_TERMS;
     addItemRow();
   }
