@@ -65,9 +65,9 @@
                 <div class="invalid-feedback">Request date is required.</div>
               </div>
               <div class="mb-3">
-                <label class="form-label" for="deliveryDate">Valid Until <span class="text-danger">*</span></label>
+                <label class="form-label" for="deliveryDate">Valid Until  <span class="text-danger">*</span></label>
                 <input class="form-control" id="deliveryDate" name="deliveryDate" type="date" required />
-                <div class="invalid-feedback">Valid Until date is required.</div>
+                <div class="invalid-feedback">Valid Until  date is required.</div>
               </div>
               <div class="mb-3">
                 <label class="form-label" for="shipmentMode">Shipment Mode <span class="text-danger">*</span></label>
@@ -106,6 +106,33 @@
                   <option value="EUR">EUR</option>
                 </select>
                 <div class="invalid-feedback">Please select a currency.</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label mb-1">Exchange rates</label>
+                <div class="small text-secondary mb-2">Used to convert line amounts into the selected shipment currency for Grand Total.</div>
+                <div class="row g-2">
+                  <div class="col-12 col-sm-4">
+                    <label class="form-label small mb-1" for="exRateUSD">1 USD =</label>
+                    <div class="input-group">
+                      <input class="form-control" id="exRateUSD" name="exRateUSD" type="number" min="0" step="0.0001" value="1" />
+                      <span class="input-group-text ex-to-currency">—</span>
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-4">
+                    <label class="form-label small mb-1" for="exRateLKR">1 LKR =</label>
+                    <div class="input-group">
+                      <input class="form-control" id="exRateLKR" name="exRateLKR" type="number" min="0" step="0.0001" value="1" />
+                      <span class="input-group-text ex-to-currency">—</span>
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-4">
+                    <label class="form-label small mb-1" for="exRateEUR">1 EUR =</label>
+                    <div class="input-group">
+                      <input class="form-control" id="exRateEUR" name="exRateEUR" type="number" min="0" step="0.0001" value="1" />
+                      <span class="input-group-text ex-to-currency">—</span>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div class="mb-0">
                 <label class="form-label" for="priority">Priority</label>
@@ -149,6 +176,12 @@
               </thead>
               <tbody id="itemsBody"></tbody>
             </table>
+          </div>
+          <div class="d-flex justify-content-end mt-3">
+            <div class="text-end">
+              <div class="text-secondary fw-semibold">Grand Total</div>
+              <div id="grandTotal" class="h5 mb-0">—</div>
+            </div>
           </div>
         </section>
 
