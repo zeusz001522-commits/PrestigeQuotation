@@ -13,9 +13,6 @@ const hidePreviewBtn = document.getElementById("hidePreviewBtn");
 const formRefEl = document.getElementById("formRef");
 const nameInput = document.getElementById("name");
 const companyInput = document.getElementById("company");
-const emailInput = document.getElementById("email");
-const phoneInput = document.getElementById("phone");
-const faxInput = document.getElementById("fax");
 const requestDateInput = document.getElementById("requestDate");
 const deliveryDateInput = document.getElementById("deliveryDate");
 const shipmentModeInput = document.getElementById("shipmentMode");
@@ -23,6 +20,13 @@ const incotermsInput = document.getElementById("incoterms");
 const currencyInput = document.getElementById("currency");
 const priorityInput = document.getElementById("priority");
 const shipmentTypeInput = document.getElementById("shipmentType");
+const polInput = document.getElementById("pol");
+const podInput = document.getElementById("pod");
+const viaInput = document.getElementById("via");
+const transitTimeInput = document.getElementById("transitTime");
+const carrierInput = document.getElementById("carrier");
+const destinationFreeTimeInput = document.getElementById("destinationFreeTime");
+const remarksInput = document.getElementById("remarks");
 const termsInput = document.getElementById("terms");
 const exRateUsdInput = document.getElementById("exRateUSD");
 const exRateLkrInput = document.getElementById("exRateLKR");
@@ -34,6 +38,9 @@ const CHARGE_TYPES = {
   LOCAL: "Local Charges",
 };
 const CURRENCY_LOCALES = { USD: "en-US", LKR: "en-LK", EUR: "de-DE" };
+
+const FIXED_LOGO_DATA_URL =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAgAElEQVR4nO3de1hU9f7/8dcwM8MGEYQwAQVJ2ECwE3kzYtqVqkBVa8k0aCz6N8b4rVq2aJkq2lW1U1W0q3S3qSx2VQ0bV2oKkS2cFQqZkYgkQfYQyKQ8M8v3+e7w0m8m5s8m7mZ3nJ8n9z3u8n7vP8z7n3g8nK4z0zvnPAl/BMI5SwoQ65+C8s84oeJx/TE9ATxln0nndlJ4v7pm64jnLCKMo5gEhwp9FUmgtcqT3Qnb3KsRAFkEiE9YMVA7jOpQs+H1klvpPkvNjmEkamZhKjVnIz9KKQmRtobs3UGZyBlhcVfSs5kUtMDQLnHNMqqgN4BUs/D+CsuQLkZlwSYJzQb6mywn6lf8P1bxq72/eBVpHNaq39T6a2xAcotEHCR9TiDHf9RBUoei4mQTlNzYGUkgQWEI4ybAgfELtrcVqlCz6CrlNsroaQ1GYv80RyyLBdAFOu+arbri55AykpwgGGwMdqkLrFT67HIVsut0Hrwe2sgclqINlK7eCFsJlOP3TkyZeOccNQSG9pYBlBVmkJR2EsuDvco75Eyr9cRLw0mG7pyC3qFtHUY3MTUByScubs3MIIqOakAYSGRnl1cJKowTIqwgzji/gNFjqInNVGzIR/gijRcY8+ydREEdPR29U2bdU67KjqELm5ZOLOcmZ+0HkFngEWSF+iPyP3Y1dkUn5NPNcp6JQ9L+g4q5HRTxHKVFN0ETtQ4MOy8iOBtKKyo7YUN5+qH7SLcis8QpE16dyrmEzwndApbR3REzpTIzUmU8DiWAux6Hw3lLAzdBebz4QbrHZYp6hDaBvL8hKY+iX6A6FcQJiyHMh2ABxEk6E1vAzgv4W16JINSA2MAFz/IVIY7EFK59GTGhG1PklRhvSRm9CjcXaGzE5BGA4ivy6EkfryEcgSikVdsAMVEkRAkWx1094fAvy4S1Jcm7E+Z9GGotfgHAN2v+R2kyhsXXynVUStMVeiwQ3W4H3s4iWnI/XUqJU84vSF45CgSTFnht5vxKOrcs0oU6FBNUN2ortDvmR/ZpGIbSXEvgFZgLfIqhJA+QlWNujImi7mu//Qi89aeJfCkUS/ZkgAa6zuAtJMq2ez+dyJMGBU57EeYm7oZIqg4u4Vz78E5VbmZ/voNdmwqsz250uR6OABOun+DeKtloG8NqdnwPjoPHewzBkSvwCQfLhv5EwMLv9Xl3EOLyNcCmq+nsmuR3ivo4CEs4guo96UXA3WWck1BjfTH+0Dy4GHs23oZPeOwnhLTFSSPC4DhVwzDu2Uo8rD5E9CiWoHk9uMEkKac4DEOPriqKpJ6F12GENuNh3Wcz8dhXz6JR1fsPK913tIYMW1gqkiYxH2dA3AJcggt7e8tMSHo8gz0DS7t8QwTsVSTQXEVQWHYZMR75DvD8y7xxPaZruWEwGtgZmeATWlSBTkPPiD6F0jAOkkk9EHeRmEi5RnUKS5NO11e2b4zgkkVvG8Spa3IG9PZuN0tp2QSVGjjTfM+h9fAdHWu3KyCpvY1yLhIhDgQedw8YiG/tPyGUcdci0uDdaFyuRme5ZchnQvsjkOjViKGn0HucQ2PF7IdPMc8iUd4KZ40WISOUrlV4Q3hoahd7DDoiJf4ASZ9+IOBb07o5AEnebGZPNg9qA1s4atH9WoKoOFkPNuTsjE1s98hc8h/KxJqC9daA5d0dEP15Ea6sSlRZ6E/jAG1svVD7nI2hPNCFf1oMEddpGOs9aa8Y709z/XYro1eMR4izSOL6FLAH2/QxEvrJJiKa0oqq+DxL2nVWa+Zpi5uUkZJJfjawr26CIwzqk+aTN/NyHUgt2NM/zFlpLk5E1YwMqcvoo0BjxLmtRUvR+SPNfjKIbp3nvfhSwLVrb+5l3OABVOb6FLkyYLknnPY+Q3Is4vC3RPAjlAfwZp29Enu6BTyEiZ7WNL6DiidbsMhHlmPwDRXzZz9VIqi4l4wCVjj6bXC3tWUTYrsax/xuMR1pYqTEJ2ZVv8p79H8gBXvPW3CzIMX4tQUe/95HW8I475x7jqEClvm8nYBz16N19hW5iHBaOtPS+GdO5hG3tn0dExe8VPgKtta+gzfumebYfE85PsTgNaWhRSJv77u381s9c+3hzvaFmXldSWql2P8S0D0fa5juIaF2P9oS/Hk9ArRPSZk7eRAz0Z4i5pQgI8OcQIbMYZ657EiJ8byAi+1EC7XOs+dQgYjvafKxpthppgjt74xqBfIIXmTFMRwLMZAK/6ERUHeIoRCTfRMLi0cjs1Fk61US450gKWTQuRAEXMxCjPQNFILrm5mq0Bo5FLXS3RetuKWImOyDi3oeg1fBwZ8yHIIvBr828N5j5rQe+i4QftxgsiPhfZuZzPWJqQxCtOcU7diJKb/icuZ6tY7eBLm6OV7K4II8YvYA25S+RA6vKPNzOiPj9B8i6fhDv/NvMBP7WvJRT0AKcjV58Ffkb0JQaX0QL7AaCF3Kb+ZDJwpc/lqJVpGMYMrXsVPxtEiPq2SuhvQbWLgTRZgtRKZFQDxaPcQxHDPtcAv/GAvSu/obT3Ggj5XLcjIj1cUgLmYiI6tcIN16qNGOuQrlDblTTBORA/RoiqB1FBknP5yONumRtdh1pcku0d+5B697VMo82f5tNYMMfhQjh7wibiP+NiPJ0ZA6G6D1zGiI2ZxMuNFqJCGQzKqo5BRH9q5HUXAjVSPCrIPd9uGv4c8ifdwHhUPQqJDQWxZQjpPgd0Xq2/krbGOwKwlrGnWaeDjf/t8f2MmO7HAlqLqaaMY5AApyPNrRuf4e0d3d+7zXjeIAggCVFUCj2TMLFXk9BGtQ0ggZlbajqeQqZ0bst0q2kPb89wjILRfn8jOAF7YEk5Z/hRCfENHu6DoXtNphx2rGuRZLJUvO37mg92w+9/EuQVkE2C6MGw9lHpfjSsSla26hFktotKAKoO9Bq5mMBWkxtGSmpVlVdihZUHIFLIcnoNrQoLeN4HvgU0vA2GuNwtI9FiIGcjcwNZyNm+Kp3yq7INHIJueGwsxBT/xjhzokdQX9Uabor+rODNIA1yAzmd9B7CJlEziYQ/nZA++Ap79hVyLH90QL3G2Dmq9773a4vizT5owj9vbgP8v39nNz3kSVYpwMQkfS7DLaQvKVslugOjh9BWtnfvesvIje0ewEyk+3m/d4HMbfbiEY+QTZtrntNxPza5leTnd+2AY5BmopfJfweZOY7znvuwYjpdWuIdGkzEsjRQNaihTPV/Lsz2vw/QHbEi1HF1zaXgTg+lCvRS/kiwcuZhqSvwYg7j0bEYCxSGUeav/VDEkGptJN+SC08GfV3f5ks80lRi1TZA5GpoX/HbxGJVrToViNmsBAt5Dnm3/nm9xVAU4O2R4X5/lUCCcrHSCQ9n0tg6mtEkurFOI75HpI5fjvycVyMNI9ziSZW83DMc57/5GUkYe9m5q+jaMCJ3CmxQ7ICraMnzH2inKn/QVLwCPSeqpEEGkU8WyicMPsIMsGdjghUPQmQwMl7ILL1z4qaK+95fkDAkBvj7hUDS0BPNGOvMt93Qoz1ryTv474c0RQXreh9tyZ5bu/vaWS1WBxz7jJEEy32Qkx/asSlW5D255oG04ihtHdy7K48k5IzD8hhIBmknk1HC+RTyG56AOKWN6PQwfchx5zShlTLdwkkkDZELJcS9jWkELPoi4jhCALGMs78vxSMZWvzOSeVYh1ZqklR08kpa0NEbTXRDGIB8jmsMse1ZLIwfxmsXAdrNmRZvgZWrWunpvNRnPu/Iu5VgySXbxG25c9EhPmfOBLaxmYcDvFfhfw4f0WaxTsRh49GG6nFnutdY4OZ39F0HClE1Lsq0a8X8qPMznPMQjOOIehdv4v8QbsSNifVIqn2cfLjSfTuz0dBKg+i1r9zOvks49znyEPU7kPS/YXIx/EAciS3CzAFEvyySGg7Eq3dDBJcpyEmG7VWaszc7IXMhLWIEO9BbiRZC3kSahNgFfF97TOENbkxaH3+kKAtsEUbEizWIoGgzfx9FcYk150Jil3CPCCyKN97SFp8Gtn+tkPq6ldRhMAViHD5YbltSFWvQFL/1mjzLEfS9Tykgtqs0gZEINxWni5jsRrLGKStjKMDjMUQ6eoi5rBoBhF1kbpauOr+LE366xaI0PRGmy+Lol/uIdcEkEKb5WuouKEtp9KEkjQv8eZsozOOCLyAhIz2BEdPs6iOmzeDjPl7ddQfi8hAbje5dMFmTaM1FWKA3rO2mjHYMOr30N75KfJRvYPW+seQ0HV7gXtmkIb6NAq2OB45jx9D+7IjjDKFCHRj3AHO87SZcT+KaMGxKPz938i/sjrBnM1GAtNaCmOUmavRSNuxrQvWE/hTo+aoo+87Q3Lzei9EA5bFjOMBJCy4UVRtRVy/ZOgy5mHhaSGNyI7+HIq+OA0Rve2RhHAqWqwPEji33AmajSIXJiPi2GQm8jvkl658xuJHR/Ui0FisKSwvYzFvtYKwScBlEMsQQ5iHGMQcPAaxoZGWdApa26CyAnrXRK+A8846w9fIqpEG9220EWrM/S5GBMBnHNujqJnPIOe4xRvIXHE7zibvaUzDITIZAsIZtZFX4lQ2iEAV4XDNQrDBGd2JZrT2B0GYoTlMsi8imK4/4HpkjjsdrbUmZOK4mzzE12O+y5E14A4UxvoDtD7OJ6Epy0EWEfK84ere/RcjS8StyFfxQyQgfZPcNZ0Y3vyl0L7pgxik39Z6bzZutvhaZOa7fCOOIRG6nHlApBbyLpIS7kcL4wBEhA9AjOFJFBnzGOFih6+izfFrJD1XIzXzFiQ5X4+zyGPqXqXQwrGhixlzj0IaS4ixZGF8KsWQrCTE+YR9EAU1iDufzbJsDemKNJWIQLUAzVFj9hjHtohZnkZQ1Xcq2hCPerfZBpkBPkvYSbwUhfteacac8642UbyOJNeBwCpLeB3iNNJ8XOGhhSAMHMipmzWK7pXqbNuBPZA0HmVb3xkxGLco5QmIeV6A1nKiCKUYu30rcrR/A2k02yMJHRxTSgJN7U2k/fQCGvzj8/hKmpEQtA6ZKscRRBcVRIExDUAM4hfkMg5QQEyxjBJK51t9C73LIZgCsxshGTQRuoV5WHhaSAtiHs8jhnAuQYLQ0ShB5imkqTxKID29h1TaN5HJqz/yb/yWINLmTYiN4qow530cbTDbBe/ZiCHHmsLWbCBVPSpV09JKW7qKllSCpXPtgyEatEtFmouQ2akFSVnT7B8jkvf6IG3jm2gzY8Z/mznXFilMm3k8HWlybqa9TRT7IyIO7QPaxJmGxQtIGDgBU4LF23CfRtLt685vswmElzbv+P3RXJcy0SoTMS4f9xDUd3vT+1tfJAw8SjhaaA9kCl1PEP3TWaa3jiBHAoIyPO1BIQWe4zEU7HIMJnCjSAK4FjGSUobkW4ExivbtjJJR7y3qimI2SeekEF40z3wKirbrcUzDoluZB0RqIStQLPv9KN77DMT9eyEmcgiKkvkHsoHOQ4zkx6hu1k+Qul6FpPG9EXG8xVzbJ8StaHOeQlAGxZaUL1gl1l5rYB+yc5dkGxcsx+Z3cNZRqaT1pnZAmtU+5vsVOK18I97RgUgKPILAjLIUmRT+jBZvb6S1nYYc4ls412hE2tyfEdFpz7LeBJlGTpioo10sQyHVPzTHWfPnAPS+T0TmUtck+ggixucjRtyA1sP+KM5+ScQ9OxriXok0x6VER0AtMM/wX+Sw/j3K6ZiG1u0Y5FROoVB2F/9GDGdfArt/m7nmg4ixWmZiQ25B6+bTyFQyw8xNJXIiX4ACEKzDeZ35/yfRnrTZ65aJVRAm9DORdvsDxPQeMdevRmbhZUhDt62sZxJES41Fa/5tCjvuiylCuhqZzc9F+30eMvvuaZ5rCrnCgjtfUZiK1sr+5vxqJKhZxpdvbH6Y73LzHn9q5uFeM0dpZMrcBfloZjrnd0X7iYLoduZhEcFE5iBG8E+0mU9DUnMNein7IWfv/ciOOxVFaUxBIbRnIOl8AiIgJyGm9BC5/pPpqJTATchxvxdiOOcg6a1QKfgUMLktwxZtGbJIpZ+XkHHshpyAe5nvjyEV2rfpplHyz5dQoMAA52/PohyYZwnKuJxi5sjNjm1ABQWvRcQoNA+bIONoJciejcN9iDl+CWlqTUibXYaSr3wN8x1E3C5EptAGtC9Wok18EGEnbCsiOsXW0mpDJsIziM4DSiNCe5u5x8VIw/4uIvpt5jmmIsLi5gDshASGxxGxt2upBq3vq9Aau91cax7GJGLuNcKMqw0JGmlEuF4343CT6y5HDO3viNC/bL5nzLz4DusbEfE7E/ncGglCiy9GzHkc2vOt5u/Wl/gKYqB+SRkfa829k2qIlyEB4ypzbtq876vMnE1yjs0gxprjiHeElv+iGni/MvNab97RDPP9A+KxiNxIrAfMNb6ELCTWH1mJhAHX7LrOPHtX1OzKi+7K0C6ICIl7G0QUT0WSusu9V6O45vsIQvoORRVg93GOa0Smr+sRkV7t3eNgZN4Yb77fh0pPzLMHxPhNKpAm9En04r8A3FSgix9Ic/i9eR7Q5vw0YdNEJWIaZyIG6Dq4lyGJ8+/Idv9xc82tI+bnCRTW+iSbPtNwY+b7m+dpKdAcqjfyT/Ux8zEfhwhFFJbra47vZY5fgNZPHXrH9tw0YtDrgdYk0TeOo7Y/MZFeBuvJtbcPQgJCBUGUnmuOGoDe872IUEfhQrROTjTP1Nc8k2WAKYJGZ3XIPLUUMago01dfRPArzXiWELRmbgCaI+a3zjxHXzOGxcgykDVzOhg5qnsh5rcELzw2T2HEavO+1wDZhEUnK5AmN8jM+wcEWo/VHOzchJ4rz/XGIn/bWiQoNJvnqcQEN0T4L2zJnSiBqAZZEAaa97XCzInrR60yz7620LOXGiXNMO8MIgjaTCQtHYVqtzxBMMEDCMJ7n0ARGkORNHEZ2vggSe0oZMK6HzEGl9A+hdRXyyw+hrSR9gzTCIe1hVUVc8psR5xTh7SmmwkYxzvmuSzj6GfGeiMyQZxPwDgyyN9yE1rYNyJGdwEyg9j7z0GmqeORKeB+HMZhy8BswsggKTYyCMHbOPVojl9FklmTf5x3/Do0x/Z4K+1tICz5ZhBziYvbj0OWIEw77lMfMa6VSMiYgta1T8y3RUT54Tz3no7WoGVc6whrTlkkIb+NpP1pBOHvcXP1hhnTEucaa3A0aO+cDeZ9vILW/HLn+hkkGE03f3+dBIzDQbOZ22J8PDZ681UzLsu0WwgT8pznynO9WeZ6M53jG8ifJR/qgOo9Z5NzzWlIAPLXfosZX7eH6vYYzcNHBMHui7SKExHjGEeYaGfRgn8dTfpkFCnjYw6Sxh9Ezqn5KLb9LwQayHsoI/42ouPUK1AC3knm+1nES327I9PDJwj8FdOQSvoK2vxHICfvZIL8CxctaHP1JSghYrEOLa67zTO9j7eQNnGGUUYMjPQ6CQkln8LL03HwC7QXzgHaPiyd7sroWvRY5mERwURSiHF8FNl590EmHBe2zk2+GP0WxEheRn6BUUg7sFETjcgUcAUykbmSRyHmkUK25s8i85N1XmfN/f5EoBV9hGgmlw8NyJ76GNJSXiNCuikzjc0bhnn0Qr6SfijicBZBIuQWSJveH1UUeA0+PG1Sy+ha9HjmYRFjOqpGZqgDkfawJ9owHQkEWI0Ieq33+ypEpO9GTGQhYiS3ErTy/DyyO49EkuDxKEt2jHetVsSw+iCTVDHzvxap188gP89rxGT+lpnGhwOO3Xwo0ir2RmuqFWnlLcgU9HeC6Jwy8yijJNhkmIeLGEZShRyee6C4/b0QYxlUoudsRYzjPeQj2d9cH+R3WYlKP48jSN7rDBrN/d5AoYXPI7NEZHZ0mWF8+BAR/98POVcrkel2NV6wRJlxlFEqbJLMw0UMIwGZnyaguOg9UQLQBJS5WQriXkq0EZRWfwdpFa8hZhFVqhooM4wyiksgKzOOMkqJTZ55uMjDSEDRJsORU3w789kKRaoMRY7oWrqullEGMYENSHtYjML53kUMYyZy3q8kJpKnzCzKKKOMnoLNinn4KMBMQHHUAxDzGIUYyRbmMxxpKQMRY+lNwFyqCCK9bAJXCzIVNCAGsQYxgqUoCmwBYg4LCGLc11MgsanMMMooo4yeiP8H2JQ3DJlVqTEAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjYtMDQtMjJUMDk6MjU6NTQrMDA6MDBB5tYuAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDI2LTA0LTIyVDA5OjI1OjU0KzAwOjAwMLtukgAAACh0RVh0ZGF0ZTp0aW1lc3RhbXAAMjAyNi0wNC0yMlQwOToyNjowMyswMDowMAHexKQAAAAASUVORK5CYII=";
 
 const COMPANY_FOOTER_LINES = [
   "PRESTIGE INTERNATIONAL LOGISTICS (PVT) LTD",
@@ -78,6 +85,83 @@ function serviceInformationLine(data) {
   return `SERVICE INFORMATION - ${mode} ${st} Quote No #: ${data.ref} Date : ${dateStr} Valid Till : ${validStr}`;
 }
 
+function serviceInformationLines(data) {
+  const mode = String(data.shipmentMode || "").toUpperCase();
+  const st = String(data.shipmentType || "").toUpperCase();
+  const dateStr = formatQuotationDate(data.requestDate);
+  const validStr = formatQuotationDate(data.deliveryDate);
+  const line1 = `SERVICE INFORMATION - ${mode} ${st} Quote No #: ${data.ref}`;
+  const line2 = `Date : ${dateStr} Valid Till : ${validStr}`;
+  return [line1, line2];
+}
+
+async function loadImageAsPngDataUrl(src) {
+  return await new Promise((resolve) => {
+    try {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        try {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.naturalWidth || img.width;
+          canvas.height = img.naturalHeight || img.height;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            resolve(null);
+            return;
+          }
+          ctx.drawImage(img, 0, 0);
+          resolve(canvas.toDataURL("image/png"));
+        } catch {
+          resolve(null);
+        }
+      };
+      img.onerror = () => resolve(null);
+      img.src = src;
+    } catch {
+      resolve(null);
+    }
+  });
+}
+
+async function loadImageAsDataUrlViaFetch(src) {
+  try {
+    const res = await fetch(src, { cache: "no-cache" });
+    if (!res.ok) {
+      return null;
+    }
+    const blob = await res.blob();
+    return await new Promise((resolve) => {
+      try {
+        const reader = new FileReader();
+        reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : null);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(blob);
+      } catch {
+        resolve(null);
+      }
+    });
+  } catch {
+    return null;
+  }
+}
+
+function applyFixedLogoToDom(root = document) {
+  const imgs = Array.from(root.querySelectorAll('img[src="logo.png"], img[src="./logo.png"]'));
+  imgs.forEach((img) => {
+    img.setAttribute("src", FIXED_LOGO_DATA_URL);
+  });
+}
+
+function guessImageFormatFromDataUrl(dataUrl) {
+  const m = /^data:([^;]+);base64,/i.exec(String(dataUrl || ""));
+  const mime = m?.[1]?.toLowerCase() || "";
+  if (mime.includes("png")) return "PNG";
+  if (mime.includes("jpeg") || mime.includes("jpg")) return "JPEG";
+  if (mime.includes("webp")) return "WEBP";
+  return "PNG";
+}
+
 function createReferenceId() {
   const now = new Date();
   const year = now.getFullYear().toString().slice(-2);
@@ -96,6 +180,22 @@ function sanitizeHtml(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+function formatDays(value) {
+  const raw = String(value ?? "").trim();
+  if (!raw) {
+    return "";
+  }
+  // If user typed "7 days" keep it as-is; if it's just a number, append "days".
+  if (/[a-z]/i.test(raw)) {
+    return raw;
+  }
+  const n = Number(raw);
+  if (!Number.isFinite(n)) {
+    return raw;
+  }
+  return `${raw} days`;
 }
 
 function formatAmount(amount, currencyCode) {
@@ -282,9 +382,6 @@ function getFormData() {
     ref: formRefEl.textContent,
     name: nameInput.value.trim(),
     company: companyInput.value.trim(),
-    email: emailInput.value.trim(),
-    phone: phoneInput.value.trim(),
-    fax: faxInput?.value?.trim() || "",
     requestDate: requestDateInput.value,
     deliveryDate: deliveryDateInput.value,
     shipmentMode: shipmentModeInput.value,
@@ -293,36 +390,22 @@ function getFormData() {
     exchangeRates: getExchangeRatesFromForm(shipmentCurrency),
     priority: priorityInput.value,
     shipmentType: shipmentTypeInput.value,
+    pol: polInput?.value?.trim() || "",
+    pod: podInput?.value?.trim() || "",
+    via: viaInput?.value?.trim() || "",
+    transitTime: transitTimeInput?.value?.trim() || "",
+    carrier: carrierInput?.value?.trim() || "",
+    destinationFreeTime: destinationFreeTimeInput?.value?.trim() || "",
+    remarks: remarksInput?.value?.trim() || "",
     terms: termsInput.value.trim(),
     items: getItemsData(),
   };
 }
 
-function isPhoneValid(value) {
-  return /^[0-9+\-()\s]{7,20}$/.test(value.trim());
-}
-
 function validateForm(showFeedback = true) {
-  const emailValue = emailInput.value.trim();
-  const phoneValue = phoneInput.value.trim();
   const rows = Array.from(itemsBody.querySelectorAll("tr"));
 
   let isValid = form.checkValidity();
-
-  // Email/Phone are optional. Validate format only if user entered a value.
-  if (emailValue && !/\S+@\S+\.\S+/.test(emailValue)) {
-    emailInput.setCustomValidity("Invalid");
-    isValid = false;
-  } else {
-    emailInput.setCustomValidity("");
-  }
-
-  if (phoneValue && !isPhoneValid(phoneValue)) {
-    phoneInput.setCustomValidity("Invalid");
-    isValid = false;
-  } else {
-    phoneInput.setCustomValidity("");
-  }
 
   if (rows.length === 0) {
     isValid = false;
@@ -435,15 +518,34 @@ function buildPreviewHtml(data) {
   if (data.name) {
     contactLines.push(`<p class="quot-line"><span class="quot-label">Attn :</span> ${sanitizeHtml(data.name)}</p>`);
   }
-  if (data.phone) {
-    contactLines.push(`<p class="quot-line">PH : ${sanitizeHtml(data.phone)}</p>`);
-  }
-  if (data.fax) {
-    contactLines.push(`<p class="quot-line">Fax : ${sanitizeHtml(data.fax)}</p>`);
-  }
-  if (data.email) {
-    contactLines.push(`<p class="quot-line">E-mail : ${sanitizeHtml(data.email)}</p>`);
-  }
+
+  const shipmentDetailLines = [
+    data.shipmentType ? ["Container Type", data.shipmentType] : null,
+    data.incoterms ? ["Incoterms", data.incoterms] : null,
+    data.pol ? ["POL", data.pol] : null,
+    data.pod ? ["POD", data.pod] : null,
+    data.via ? ["VIA", data.via] : null,
+    data.transitTime ? ["Transit Time", formatDays(data.transitTime)] : null,
+    data.carrier ? ["Carrier", data.carrier] : null,
+    data.destinationFreeTime ? ["Destination Free Time", formatDays(data.destinationFreeTime)] : null,
+  ].filter(Boolean);
+
+  const shipmentDetailHtml = shipmentDetailLines.length
+    ? `
+      <div class="quot-ship-details">
+        <div class="quot-ship-grid">
+          ${shipmentDetailLines
+            .map(
+              ([label, value]) =>
+                `<div class="quot-ship-cell"><span class="quot-ship-label">${sanitizeHtml(label)}:</span> ${sanitizeHtml(value)}</div>`,
+            )
+            .join("")}
+        </div>
+      </div>
+    `
+    : "";
+
+  const [svc1, svc2] = serviceInformationLines(data);
 
   return `
     <div class="pdf-sheet pdf-a4 quotation-preview">
@@ -461,10 +563,14 @@ function buildPreviewHtml(data) {
           <p class="quot-to"><span class="quot-label">To :</span> <strong>${sanitizeHtml(data.company || "-")}</strong></p>
           ${contactLines.join("")}
         </div>
-        <div class="quot-title-block">QUOTATION</div>
+        <div class="quot-title-wrap">
+          <div class="quot-title-block">QUOTATION</div>
+          <div class="quot-subline">Shipment Mode: <strong>${sanitizeHtml(data.shipmentMode || "-")}</strong></div>
+        </div>
       </div>
 
-      <p class="service-info-line">${sanitizeHtml(serviceInformationLine(data))}</p>
+      <p class="service-info-line">${sanitizeHtml(svc1)}<br />${sanitizeHtml(svc2)}</p>
+      ${shipmentDetailHtml}
 
       <h3 class="quot-section-title">Freight Rate</h3>
       <table class="pdf-table quot-table-basic">
@@ -501,6 +607,11 @@ function buildPreviewHtml(data) {
         <span class="pdf-muted quot-gen">Incoterms: ${sanitizeHtml(data.incoterms)} | Priority: ${sanitizeHtml(data.priority)}</span>
       </div>
 
+      <div class="quot-remarks">
+        <p class="remarks-cap">Remarks :</p>
+        <div class="remarks-box">${sanitizeHtml(data.remarks || "").replace(/\n/g, "<br>")}</div>
+      </div>
+
       <div class="pdf-terms quot-terms">
         <p class="terms-cap">Terms &amp; Conditions :</p>
         <div class="terms-body">${sanitizeHtml(data.terms || DEFAULT_TERMS).replace(/\n/g, "<br>")}</div>
@@ -513,6 +624,7 @@ function buildPreviewHtml(data) {
 function renderPreview() {
   const data = getFormData();
   pdfContent.innerHTML = buildPreviewHtml(data);
+  applyFixedLogoToDom(pdfContent);
   previewSection.classList.remove("d-none");
 }
 
@@ -532,9 +644,6 @@ function loadFromLocalStorage() {
     formRefEl.textContent = data.ref || createReferenceId();
     nameInput.value = data.name || "";
     companyInput.value = data.company || "";
-    emailInput.value = data.email || "";
-    phoneInput.value = data.phone || "";
-    faxInput.value = data.fax || "";
     requestDateInput.value = data.requestDate || getTodayDate();
     deliveryDateInput.value = data.deliveryDate || "";
     shipmentModeInput.value = data.shipmentMode || "";
@@ -547,6 +656,13 @@ function loadFromLocalStorage() {
     if (exRateEurInput) exRateEurInput.value = ex.EUR ?? 1;
     priorityInput.value = data.priority || "Normal";
     shipmentTypeInput.value = data.shipmentType || "";
+    if (polInput) polInput.value = data.pol || "";
+    if (podInput) podInput.value = data.pod || "";
+    if (viaInput) viaInput.value = data.via || "";
+    if (transitTimeInput) transitTimeInput.value = data.transitTime || "";
+    if (carrierInput) carrierInput.value = data.carrier || "";
+    if (destinationFreeTimeInput) destinationFreeTimeInput.value = data.destinationFreeTime || "";
+    if (remarksInput) remarksInput.value = data.remarks || "";
     termsInput.value = data.terms || DEFAULT_TERMS;
 
     itemsBody.innerHTML = "";
@@ -573,6 +689,7 @@ function resetFormData() {
   if (exRateUsdInput) exRateUsdInput.value = 1;
   if (exRateLkrInput) exRateLkrInput.value = 1;
   if (exRateEurInput) exRateEurInput.value = 1;
+  if (remarksInput) remarksInput.value = "";
   termsInput.value = DEFAULT_TERMS;
   itemsBody.innerHTML = "";
   addItemRow();
@@ -581,22 +698,15 @@ function resetFormData() {
   localStorage.removeItem(STORAGE_KEY);
 }
 
-async function downloadPdf() {
-  if (!validateForm(true)) {
+async function downloadPdfViaJsPdf(data, filename) {
+  if (!window.jspdf || !window.jspdf.jsPDF) {
+    alert("jsPDF is not loaded. Please refresh and try again.");
     return;
   }
-  if (!window.jspdf || !window.jspdf.jsPDF || !window.jspdf.jsPDF.API || typeof window.jspdf.jsPDF.API.autoTable !== "function") {
-    alert("PDF libraries are not loaded. Please refresh and try again.");
+  if (!window.jspdf.jsPDF.API || typeof window.jspdf.jsPDF.API.autoTable !== "function") {
+    alert("jsPDF AutoTable is not loaded. Please refresh and try again.");
     return;
   }
-
-  const data = getFormData();
-  const previewHtml = buildPreviewHtml(data);
-  pdfContent.innerHTML = previewHtml;
-  previewSection.classList.remove("d-none");
-
-  const datePart = getTodayDate();
-  const filename = `Form_${datePart}.pdf`;
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
@@ -607,8 +717,6 @@ async function downloadPdf() {
   const contentWidth = pageWidth - margin * 2;
   let y = margin;
 
-  // Charge rows are tagged as either "Freight Rate" or "Local Charges".
-  // Backward-compatible with older saved data that had no `type`.
   const items = (data.items || []).map((it, idx) => ({
     ...it,
     type: it.type || (idx === 0 ? CHARGE_TYPES.FREIGHT : CHARGE_TYPES.LOCAL),
@@ -618,47 +726,40 @@ async function downloadPdf() {
   const shipCur = data.currency || "USD";
   const grandTotalValue = computeGrandTotalInShipmentCurrency(items, shipCur, data.exchangeRates || {});
   const grandTotalDisplay = formatAmount(grandTotalValue, shipCur);
-
   const rowCur = (item) => item.currency || data.currency || "USD";
 
-  async function loadLogo() {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = () => reject(new Error("Logo could not be loaded"));
-      img.src = "logo.png";
-    });
-  }
-
+  // Header: company block
   const logoW = 37;
-  let logoX = pageWidth - margin - logoW;
-  let logoH = 0;
+  const logoX = pageWidth - margin - logoW;
   try {
-    const logo = await loadLogo();
-    const ratio =
-      logo.naturalHeight && logo.naturalWidth
-        ? logo.naturalHeight / logo.naturalWidth
-        : logo.height && logo.width
-          ? logo.height / logo.width
-          : 1;
-    logoH = logoW * ratio;
-    doc.addImage(logo, "PNG", logoX, y, logoW, logoH);
+    const logoDataUrl = FIXED_LOGO_DATA_URL || (await loadImageAsDataUrlViaFetch("logo.png")) || (await loadImageAsPngDataUrl("logo.png"));
+    if (logoDataUrl) {
+      const probe = new Image();
+      const ratio = await new Promise((resolve) => {
+        probe.onload = () => {
+          const r = probe.naturalHeight && probe.naturalWidth ? probe.naturalHeight / probe.naturalWidth : 1;
+          resolve(r || 1);
+        };
+        probe.onerror = () => resolve(1);
+        probe.src = logoDataUrl;
+      });
+      const fmt = guessImageFormatFromDataUrl(logoDataUrl);
+      doc.addImage(logoDataUrl, fmt, logoX, y, logoW, logoW * ratio);
+    }
   } catch {
-    /* no logo */
+    /* ignore */
   }
 
-  // Company address block on the top-left; logo stays top-right.
   const leftWidth = Math.max(60, logoX - margin - 2);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(10.2);
+  doc.setFontSize(11.0);
   doc.setTextColor(19, 58, 102);
-
   let headerY = y;
   const headerLineHeight = 3.0;
   COMPANY_FOOTER_LINES.forEach((line, idx) => {
     if (idx === 1) {
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(8.6);
+      doc.setFontSize(9.4);
       doc.setTextColor(51, 65, 85);
     }
     const wrapped = doc.splitTextToSize(line, leftWidth);
@@ -667,52 +768,100 @@ async function downloadPdf() {
       headerY += headerLineHeight;
     });
   });
-
   y = headerY + 2;
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(16);
+  doc.setTextColor(0, 0, 0);
   doc.text("QUOTATION", pageWidth - margin, y, { align: "right" });
-  y += 6;
+  y += 5.5;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9.8);
+  doc.text(`Shipment Mode: ${data.shipmentMode || "-"}`, pageWidth - margin, y, { align: "right" });
+  y += 5.5;
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9.5);
-  doc.setTextColor(0, 0, 0);
   doc.text(`To : ${data.company || "-"}`, margin, y);
   y += 4.5;
   if (data.name) {
     doc.text(`Attn : ${data.name}`, margin, y);
     y += 4.5;
   }
-  if (data.phone) {
-    doc.text(`PH : ${data.phone}`, margin, y);
-    y += 4.5;
-  }
-  if (data.fax) {
-    doc.text(`Fax : ${data.fax}`, margin, y);
-    y += 4.5;
-  }
-  if (data.email) {
-    doc.text(`E-mail : ${data.email}`, margin, y);
-    y += 4.5;
-  }
   y += 2.5;
 
-  const svcLine = serviceInformationLine(data);
-  const svcWrapped = doc.splitTextToSize(svcLine, contentWidth);
+  const svcLines = serviceInformationLines(data);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(8.5);
-  doc.text(svcWrapped, margin, y);
-  y += svcWrapped.length * 3.8 + 4;
+  doc.setFontSize(10.6);
+  doc.text(svcLines, margin, y);
+  y += svcLines.length * 4.0 + 3.5;
 
-  y += 3;
+  // Shipment details (optional)
+  const shipmentPairs = [
+    data.shipmentType ? ["Container Type", data.shipmentType] : null,
+    data.incoterms ? ["Incoterms", data.incoterms] : null,
+    data.pol ? ["POL", data.pol] : null,
+    data.pod ? ["POD", data.pod] : null,
+    data.via ? ["VIA", data.via] : null,
+    data.transitTime ? ["Transit Time", formatDays(data.transitTime)] : null,
+    data.carrier ? ["Carrier", data.carrier] : null,
+    data.destinationFreeTime ? ["Destination Free Time", formatDays(data.destinationFreeTime)] : null,
+  ].filter(Boolean);
 
+  if (shipmentPairs.length) {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.8);
+    const colGap = 6;
+    const colW = (contentWidth - colGap) / 2;
+    const detailLineHeight = 3.8;
+    const padY = 2.6;
+    const padX = 2.0;
+    const rows = Math.ceil(shipmentPairs.length / 2);
+    const rowHeights = Array.from({ length: rows }, () => detailLineHeight);
+
+    const cellLines = shipmentPairs.map(([label, value], idx) => {
+      const text = `${label}: ${value}`;
+      const wrapped = doc.splitTextToSize(text, colW - padX * 2);
+      const lines = wrapped.slice(0, 2);
+      const row = Math.floor(idx / 2);
+      rowHeights[row] = Math.max(rowHeights[row], lines.length * detailLineHeight);
+      return lines;
+    });
+
+    const boxH = rowHeights.reduce((a, b) => a + b, 0) + padY * 2;
+    doc.setDrawColor(219, 226, 234);
+    doc.setFillColor(249, 251, 255);
+    doc.rect(margin, y, contentWidth, boxH, "FD");
+
+    let rowTopY = y + padY;
+    for (let r = 0; r < rows; r += 1) {
+      const leftIdx = r * 2;
+      const rightIdx = leftIdx + 1;
+      const baseY = rowTopY + detailLineHeight;
+      const leftX = margin;
+      const rightX = margin + colW + colGap;
+
+      (cellLines[leftIdx] || []).forEach((line, li) => {
+        doc.text(line, leftX + padX, baseY + li * detailLineHeight);
+      });
+      (cellLines[rightIdx] || []).forEach((line, li) => {
+        doc.text(line, rightX + padX, baseY + li * detailLineHeight);
+      });
+      rowTopY += rowHeights[r];
+    }
+
+    y = y + boxH + 4.5;
+  } else {
+    y += 2;
+  }
+
+  // Freight table
   doc.setFont("helvetica", "bold");
   doc.setFontSize(9);
   doc.text("Freight Rate", margin, y);
   y += 4;
 
-  const basicBody = freightItems.length
+  const freightBody = freightItems.length
     ? freightItems.map((item, i) => [
         String(i + 1),
         item.desc || "-",
@@ -725,7 +874,7 @@ async function downloadPdf() {
   doc.autoTable({
     startY: y,
     head: [["Sl.", "Description", "UOM", "Curr", "Rate"]],
-    body: basicBody,
+    body: freightBody,
     margin: { left: margin, right: margin },
     tableWidth: contentWidth,
     theme: "grid",
@@ -742,6 +891,7 @@ async function downloadPdf() {
 
   y = doc.lastAutoTable.finalY + 6;
 
+  // Local charges table
   doc.setFont("helvetica", "bold");
   doc.setFontSize(9);
   doc.text("Local Charges", margin, y);
@@ -750,14 +900,7 @@ async function downloadPdf() {
   const localBody = localItems.length
     ? localItems.map((item, i) => {
         const rc = rowCur(item);
-        return [
-          String(i + 1),
-          item.desc || "-",
-          item.unit || "-",
-          "—",
-          rc,
-          formatAmount(item.rate, rc),
-        ];
+        return [String(i + 1), item.desc || "-", item.unit || "-", "—", rc, formatAmount(item.rate, rc)];
       })
     : [["—", "—", "—", "—", "—", "—"]];
 
@@ -781,36 +924,55 @@ async function downloadPdf() {
   });
 
   y = doc.lastAutoTable.finalY + 6;
-
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.text(`Grand Total: ${grandTotalDisplay}`, pageWidth - margin, y, { align: "right" });
   y += 5;
   doc.text(`Incoterms: ${data.incoterms} | Priority: ${data.priority}`, pageWidth - margin, y, { align: "right" });
-  y += 8;
+  y += 7;
 
+  // Remarks box
+  const remarksRaw = String(data.remarks || "").trim().replace(/\r\n/g, "\n");
+  const remarksBoxHeight = 18;
+  if (y + remarksBoxHeight + 18 > pageHeight) {
+    doc.addPage();
+    y = margin;
+  }
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8.5);
+  doc.text("Remarks :", margin, y);
+  y += 3.2;
+  doc.setDrawColor(180);
+  doc.rect(margin, y, contentWidth, remarksBoxHeight);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7.8);
+  const remLines = remarksRaw ? doc.splitTextToSize(remarksRaw, contentWidth - 4) : [];
+  const remLineH = 3.2;
+  let ry = y + 4;
+  remLines.slice(0, Math.floor((remarksBoxHeight - 4) / remLineH)).forEach((line) => {
+    doc.text(line, margin + 2, ry);
+    ry += remLineH;
+  });
+  y += remarksBoxHeight + 7;
+
+  // Terms
   const termsRaw = (data.terms || DEFAULT_TERMS).trim().replace(/\r\n/g, "\n");
   const termsText = termsRaw.toUpperCase();
   doc.setFont("helvetica", "bold");
   doc.setFontSize(8.5);
   doc.text("Terms & Conditions :", margin, y);
   y += 4;
-
   doc.setFont("helvetica", "normal");
   doc.setFontSize(6.8);
   let termLines = [];
   termsText.split("\n").forEach((para) => {
     const p = para.trim();
-    if (!p) {
-      return;
-    }
-    const wrapped = doc.splitTextToSize(p, contentWidth);
-    termLines = termLines.concat(wrapped);
+    if (!p) return;
+    termLines = termLines.concat(doc.splitTextToSize(p, contentWidth));
   });
-  let ty = y;
   const lineHeight = 2.6;
-  const maxY = pageHeight - 42;
-
+  let ty = y;
+  const maxY = pageHeight - 12;
   termLines.forEach((line) => {
     if (ty + lineHeight > maxY) {
       doc.addPage();
@@ -820,13 +982,145 @@ async function downloadPdf() {
     ty += lineHeight;
   });
 
-  ty += 6;
-  if (ty + 28 > pageHeight) {
-    doc.addPage();
-    ty = margin + 4;
-  }
-
   doc.save(filename);
+}
+
+async function downloadPdf() {
+  try {
+    if (!validateForm(true)) {
+      return;
+    }
+    if (typeof window.html2pdf !== "function") {
+      alert("PDF libraries are not loaded. Please refresh and try again.");
+      return;
+    }
+
+    const data = getFormData();
+    pdfContent.innerHTML = buildPreviewHtml(data);
+    previewSection.classList.remove("d-none");
+
+    // Export must capture a *visible* node. We'll clone the rendered sheet into an off-screen
+    // host to avoid html2canvas picking up display:none / zero-size containers.
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    const datePart = getTodayDate();
+    const filename = `Form_${datePart}.pdf`;
+
+    const isFirefox = typeof navigator !== "undefined" && /firefox/i.test(navigator.userAgent || "");
+    if (isFirefox) {
+      await downloadPdfViaJsPdf(data, filename);
+      return;
+    }
+
+    const sheet = pdfContent.querySelector(".pdf-sheet") || pdfContent;
+    const exportHost = document.createElement("div");
+    exportHost.id = "pdfExportHost";
+    exportHost.style.position = "fixed";
+    exportHost.style.left = "-10000px";
+    exportHost.style.top = "0";
+    exportHost.style.width = `${sheet.scrollWidth || sheet.clientWidth || 800}px`;
+    exportHost.style.background = "#ffffff";
+    exportHost.style.zIndex = "2147483647";
+
+    const exportNode = sheet.cloneNode(true);
+    exportNode.style.display = "block";
+    exportNode.style.visibility = "visible";
+    exportNode.style.margin = "0";
+
+    exportHost.appendChild(exportNode);
+    document.body.appendChild(exportHost);
+
+    // Inline images into the export DOM so html2canvas doesn't depend on network/file URL access.
+    // This is especially important when running from file:// or when CORS blocks image loading.
+    applyFixedLogoToDom(exportNode);
+    const exportImgs = Array.from(exportNode.querySelectorAll("img"));
+    await Promise.all(
+      exportImgs.map(async (img) => {
+        try {
+          const src = img.getAttribute("src") || "";
+          if (!src || /^data:/i.test(src)) {
+            return;
+          }
+          if (src === "logo.png" || src === "./logo.png") {
+            img.setAttribute("src", FIXED_LOGO_DATA_URL);
+            return;
+          }
+          const dataUrl = (await loadImageAsDataUrlViaFetch(src)) || (await loadImageAsPngDataUrl(src));
+          if (dataUrl) {
+            img.setAttribute("src", dataUrl);
+          }
+        } catch {
+          /* ignore */
+        }
+      }),
+    );
+
+    // Wait for fonts (if supported) and images to load in the export node.
+    try {
+      if (document.fonts?.ready) {
+        await document.fonts.ready;
+      }
+    } catch {
+      /* ignore */
+    }
+
+    const imgs = Array.from(exportNode.querySelectorAll("img"));
+    await Promise.all(
+      imgs.map(async (img) => {
+        try {
+          if (!img.complete) {
+            await new Promise((resolve) => {
+              img.onload = resolve;
+              img.onerror = resolve;
+            });
+          }
+          if (img.decode) {
+            await img.decode().catch(() => undefined);
+          }
+        } catch {
+          /* ignore */
+        }
+      }),
+    );
+
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    const opt = {
+      margin: 0,
+      filename,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: {
+        scale: 1.5,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: "#ffffff",
+        logging: false,
+      },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      pagebreak: { mode: ["css", "legacy"] },
+    };
+
+    try {
+      await window.html2pdf().set(opt).from(exportNode).save();
+    } finally {
+      exportHost.remove();
+    }
+  } catch (err) {
+    const msg = err && typeof err === "object" && "message" in err ? String(err.message) : String(err);
+    alert(
+      `PDF download failed.\n\n${msg}\n\nWe will now try compatibility mode (jsPDF). If you opened index.html directly (file://), using a local server (http://localhost) is still recommended.`,
+    );
+    try {
+      const data = getFormData();
+      const datePart = getTodayDate();
+      const filename = `Form_${datePart}.pdf`;
+      await downloadPdfViaJsPdf(data, filename);
+      return;
+    } catch {
+      /* ignore */
+    }
+    throw err;
+  }
 }
 
 function attachEventListeners() {
@@ -884,8 +1178,8 @@ function attachEventListeners() {
     previewSection.classList.add("d-none");
   });
 
-  downloadPdfBtn.addEventListener("click", () => {
-    downloadPdf();
+  downloadPdfBtn.addEventListener("click", async () => {
+    await downloadPdf();
   });
 
   resetBtn.addEventListener("click", () => {
@@ -895,6 +1189,7 @@ function attachEventListeners() {
 
 function init() {
   formRefEl.textContent = createReferenceId();
+  applyFixedLogoToDom(document);
   const restored = loadFromLocalStorage();
   if (!restored) {
     requestDateInput.value = getTodayDate();
