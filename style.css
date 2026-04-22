@@ -77,14 +77,6 @@ body {
   border-color: #ced7e2;
 }
 
-.form-control#email,
-.form-control#phone,
-.form-control#fax {
-  font-size: 1.05rem;
-  padding-top: 0.6rem;
-  padding-bottom: 0.6rem;
-}
-
 .form-control:focus,
 .form-select:focus {
   border-color: #7da5d6;
@@ -296,7 +288,7 @@ body {
 .quot-company-name {
   margin: 0 0 2px;
   font-weight: 800;
-  font-size: 12px;
+  font-size: 13.5px;
   line-height: 1.2;
   color: #133a66;
   letter-spacing: 0.02em;
@@ -305,7 +297,7 @@ body {
 
 .quot-company-line {
   margin: 0;
-  font-size: 9.5px;
+  font-size: 10.5px;
   line-height: 1.3;
   color: #334155;
 }
@@ -356,12 +348,78 @@ body {
   align-self: center;
 }
 
-.service-info-line {
+.quot-title-wrap {
+  text-align: right;
+  align-self: center;
+}
+
+.quot-subline {
+  margin-top: 0.15rem;
   font-size: 10px;
+  color: #374151;
+  letter-spacing: 0.02em;
+}
+
+.service-info-line {
+  font-size: 12px;
   font-weight: 700;
   margin: 0 0 0.35rem;
   line-height: 1.35;
   color: #111827;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.quot-ship-details {
+  margin: 0 0 0.55rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #dbe2ea;
+  border-radius: 8px;
+  background: #f9fbff;
+}
+
+.quot-ship-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.2rem 0.75rem;
+}
+
+.quot-ship-cell {
+  font-size: 10px;
+  line-height: 1.35;
+  color: #111827;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.quot-ship-label {
+  font-weight: 700;
+  color: #111827;
+}
+
+.quot-remarks {
+  margin-top: 0.6rem;
+  border-top: 1px solid #dbe2ea;
+  padding-top: 0.45rem;
+}
+
+.quot-remarks .remarks-cap {
+  font-weight: 700;
+  font-size: 10px;
+  margin: 0 0 0.35rem;
+}
+
+.quot-remarks .remarks-box {
+  min-height: 16mm;
+  border: 1px solid #dbe2ea;
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  font-size: 9px;
+  line-height: 1.35;
+  color: #1f2937;
+  background: #fff;
+  white-space: pre-wrap;
 }
 
 .quot-attn {
