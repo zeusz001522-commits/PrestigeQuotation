@@ -18,7 +18,6 @@ const deliveryDateInput = document.getElementById("deliveryDate");
 const shipmentModeInput = document.getElementById("shipmentMode");
 const incotermsInput = document.getElementById("incoterms");
 const currencyInput = document.getElementById("currency");
-const priorityInput = document.getElementById("priority");
 const shipmentTypeInput = document.getElementById("shipmentType");
 const polInput = document.getElementById("pol");
 const podInput = document.getElementById("pod");
@@ -146,10 +145,42 @@ async function loadImageAsDataUrlViaFetch(src) {
   }
 }
 
+function resolveFixedLogoDataUrl() {
+  try {
+    if (typeof document !== "undefined") {
+      const domImg = document.querySelector(".app-header img, img.app-logo, img.quot-top-logo-img, img.pdf-logo-img");
+      const domSrc = domImg?.getAttribute("src") || "";
+      if (domSrc && /^data:image\//i.test(domSrc)) {
+        return domSrc;
+      }
+    }
+  } catch {
+    /* ignore */
+  }
+  try {
+    const w = typeof window !== "undefined" ? window : undefined;
+    const fromWindow = w && typeof w.FIXED_LOGO_DATA_URL === "string" ? w.FIXED_LOGO_DATA_URL : "";
+    if (fromWindow && /^data:image\//i.test(fromWindow)) {
+      return fromWindow;
+    }
+  } catch {
+    /* ignore */
+  }
+  return typeof FIXED_LOGO_DATA_URL === "string" ? FIXED_LOGO_DATA_URL : "";
+}
+
 function applyFixedLogoToDom(root = document) {
-  const imgs = Array.from(root.querySelectorAll('img[src="logo.png"], img[src="./logo.png"]'));
+  const logo = resolveFixedLogoDataUrl();
+  if (!logo) {
+    return;
+  }
+  const imgs = Array.from(
+    root.querySelectorAll(
+      '.app-header img, img.app-logo, img.quot-top-logo-img, img.pdf-logo-img, img[src="logo.png"], img[src="./logo.png"], img[src^="data:image/"]',
+    ),
+  );
   imgs.forEach((img) => {
-    img.setAttribute("src", FIXED_LOGO_DATA_URL);
+    img.setAttribute("src", logo);
   });
 }
 
@@ -160,6 +191,108 @@ function guessImageFormatFromDataUrl(dataUrl) {
   if (mime.includes("jpeg") || mime.includes("jpg")) return "JPEG";
   if (mime.includes("webp")) return "WEBP";
   return "PNG";
+}
+
+function getEmbeddedLogoDataUrl() {
+  try {
+    if (typeof document !== "undefined") {
+      const domImg = document.querySelector(".app-header img, img.app-logo, img.quot-top-logo-img, img.pdf-logo-img");
+      const domSrc = domImg?.getAttribute("src") || "";
+      if (domSrc && domSrc.startsWith("data:image/")) {
+        return domSrc;
+      }
+    }
+  } catch {
+    return null;
+  }
+  try {
+    const val = typeof window !== "undefined" ? window.FIXED_LOGO_DATA_URL : null;
+    if (typeof val === "string" && val.startsWith("data:image/")) {
+      return val;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function applyEmbeddedLogoToDom() {
+  const dataUrl = getEmbeddedLogoDataUrl();
+  if (!dataUrl || typeof document === "undefined") {
+    return;
+  }
+  const logos = document.querySelectorAll(".app-header img, img.app-logo, img.quot-top-logo-img, img.pdf-logo-img");
+  logos.forEach((img) => {
+    try {
+      img.crossOrigin = "anonymous";
+      img.src = dataUrl;
+      img.setAttribute("src", dataUrl);
+    } catch {
+      /* ignore */
+    }
+  });
+  try {
+    applyFixedLogoToDom(document);
+  } catch {
+    /* ignore */
+  }
+}
+
+let CACHED_PDF_LOGO_DATA_URL = null;
+let CACHED_PDF_LOGO_SOURCE = null;
+
+async function getLogoDataUrlForPdf() {
+  const currentSrc = getEmbeddedLogoDataUrl();
+  if (CACHED_PDF_LOGO_DATA_URL && CACHED_PDF_LOGO_SOURCE && currentSrc && CACHED_PDF_LOGO_SOURCE === currentSrc) {
+    return CACHED_PDF_LOGO_DATA_URL;
+  }
+
+  const src = currentSrc;
+  if (!src) {
+    return null;
+  }
+
+  // jsPDF can fail silently with very large PNGs. Normalize + downscale to a safe size.
+  const normalized = await new Promise((resolve) => {
+    try {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const w = img.naturalWidth || img.width || 0;
+          const h = img.naturalHeight || img.height || 0;
+          if (!w || !h) {
+            resolve(src);
+            return;
+          }
+          const maxW = 900;
+          const scale = Math.min(1, maxW / w);
+          const outW = Math.max(1, Math.round(w * scale));
+          const outH = Math.max(1, Math.round(h * scale));
+          const canvas = document.createElement("canvas");
+          canvas.width = outW;
+          canvas.height = outH;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            resolve(src);
+            return;
+          }
+          ctx.clearRect(0, 0, outW, outH);
+          ctx.drawImage(img, 0, 0, outW, outH);
+          resolve(canvas.toDataURL("image/png"));
+        } catch {
+          resolve(src);
+        }
+      };
+      img.onerror = () => resolve(src);
+      img.src = src;
+    } catch {
+      resolve(src);
+    }
+  });
+
+  CACHED_PDF_LOGO_DATA_URL = normalized;
+  CACHED_PDF_LOGO_SOURCE = src;
+  return normalized;
 }
 
 function createReferenceId() {
@@ -260,7 +393,11 @@ function computeGrandTotalInShipmentCurrency(items, shipmentCurrency, exchangeRa
   const rates = exchangeRates || {};
   return (items || []).reduce((sum, it) => {
     const fromCur = it.currency || shipCur;
-    const amount = Number(it.rate) || 0;
+    const qty = Math.max(0.000001, Number(it.qty) || 1);
+    const amount =
+      typeof it.amount !== "undefined" && it.amount !== null
+        ? Number(it.amount) || 0
+        : (Number(it.rate) || 0) * qty;
     if (fromCur === shipCur) {
       return sum + amount;
     }
@@ -285,6 +422,7 @@ function addItemRow(item = {}) {
   const existingRowCount = itemsBody.querySelectorAll("tr").length;
   const defaultType = existingRowCount === 0 ? CHARGE_TYPES.FREIGHT : CHARGE_TYPES.LOCAL;
   const itemType = item.type || defaultType;
+  const qty = Number(item.qty ?? item.quantity ?? 1) || 1;
 
   const unitOptionsHtml = UNIT_OPTIONS.map((unit) => {
     const safeUnit = sanitizeHtml(unit);
@@ -320,6 +458,10 @@ function addItemRow(item = {}) {
       <div class="invalid-feedback">Please select a unit.</div>
     </td>
     <td>
+      <input type="number" class="form-control item-qty text-end" min="0" step="any" value="${qty}" required />
+      <div class="invalid-feedback">Qty must be greater than 0.</div>
+    </td>
+    <td>
       <select class="form-select item-currency" required>
         <option value="">Currency</option>
         ${currencyOptionsHtml}
@@ -348,16 +490,20 @@ function recalculateTotals() {
   rows.forEach((row, index) => {
     const currencyInput = row.querySelector(".item-currency");
     const rateInput = row.querySelector(".item-rate");
+    const qtyInput = row.querySelector(".item-qty");
     const totalCell = row.querySelector(".item-total");
     const indexCell = row.querySelector(".row-index");
 
     const rowCurrency = currencyInput.value || "USD";
     const rate = Number(rateInput.value) || 0;
-    const lineTotal = rate;
+    const qtyRaw = String(qtyInput?.value ?? "");
+    const qtyParsed = Number.parseFloat(qtyRaw);
+    const qty = Number.isFinite(qtyParsed) ? qtyParsed : 0;
+    const lineTotal = rate * qty;
 
     indexCell.textContent = String(index + 1);
     totalCell.textContent = formatAmount(lineTotal, rowCurrency);
-    items.push({ currency: rowCurrency, rate: lineTotal });
+    items.push({ currency: rowCurrency, amount: lineTotal });
   });
 
   if (grandTotalEl) {
@@ -371,6 +517,7 @@ function getItemsData() {
     desc: row.querySelector(".item-desc").value.trim(),
     type: row.querySelector(".item-type")?.value || CHARGE_TYPES.LOCAL,
     unit: row.querySelector(".item-unit").value,
+    qty: Math.max(0.000001, Number.parseFloat(String(row.querySelector(".item-qty")?.value ?? "")) || 1),
     currency: row.querySelector(".item-currency").value || "USD",
     rate: Number(row.querySelector(".item-rate").value) || 0,
   }));
@@ -388,12 +535,11 @@ function getFormData() {
     incoterms: incotermsInput.value,
     currency: shipmentCurrency,
     exchangeRates: getExchangeRatesFromForm(shipmentCurrency),
-    priority: priorityInput.value,
     shipmentType: shipmentTypeInput.value,
     pol: polInput?.value?.trim() || "",
     pod: podInput?.value?.trim() || "",
     via: viaInput?.value?.trim() || "",
-    transitTime: transitTimeInput?.value?.trim() || "",
+    transitTime: transitTimeInput?.value || "",
     carrier: carrierInput?.value?.trim() || "",
     destinationFreeTime: destinationFreeTimeInput?.value?.trim() || "",
     remarks: remarksInput?.value?.trim() || "",
@@ -416,6 +562,7 @@ function validateForm(showFeedback = true) {
     const descInput = row.querySelector(".item-desc");
     const typeInput = row.querySelector(".item-type");
     const unitInput = row.querySelector(".item-unit");
+    const qtyInput = row.querySelector(".item-qty");
     const currencyInput = row.querySelector(".item-currency");
     const rateInput = row.querySelector(".item-rate");
 
@@ -453,6 +600,13 @@ function validateForm(showFeedback = true) {
     } else {
       rateInput.classList.remove("is-invalid");
     }
+
+    if ((Number(qtyInput?.value) || 0) <= 0) {
+      qtyInput?.classList.add("is-invalid");
+      isValid = false;
+    } else {
+      qtyInput?.classList.remove("is-invalid");
+    }
   });
 
   if (showFeedback) {
@@ -482,37 +636,47 @@ function buildPreviewHtml(data) {
         .map((item, i) => {
           const sl = i + 1;
           const rc = rowCur(item);
+          const qty = Math.max(0.000001, Number(item.qty) || 1);
+          const unitPrice = Number(item.rate) || 0;
+          const lineTotal = unitPrice * qty;
           return `
         <tr>
           <td>${sl}</td>
           <td>${sanitizeHtml(item.desc || "-")}</td>
           <td>${sanitizeHtml(item.unit || "-")}</td>
+          <td class="pdf-right">${qty}</td>
           <td>${sanitizeHtml(rc)}</td>
-          <td class="pdf-right">${formatAmount(item.rate, rc)}</td>
+          <td class="pdf-right">${formatAmount(unitPrice, rc)}</td>
+          <td class="pdf-right">${formatAmount(lineTotal, rc)}</td>
         </tr>
       `;
         })
         .join("")
-    : `<tr><td colspan="5" class="text-center text-muted">—</td></tr>`;
+    : "";
 
   const localRows = localItems.length
     ? localItems
         .map((item, i) => {
           const sl = i + 1;
           const rc = rowCur(item);
+          const qty = Math.max(0.000001, Number(item.qty) || 1);
+          const unitPrice = Number(item.rate) || 0;
+          const lineTotal = unitPrice * qty;
           return `
       <tr>
         <td>${sl}</td>
         <td>${sanitizeHtml(item.desc || "-")}</td>
         <td>${sanitizeHtml(item.unit || "-")}</td>
         <td>—</td>
+        <td class="pdf-right">${qty}</td>
         <td>${sanitizeHtml(rc)}</td>
-        <td class="pdf-right">${formatAmount(item.rate, rc)}</td>
+        <td class="pdf-right">${formatAmount(unitPrice, rc)}</td>
+        <td class="pdf-right">${formatAmount(lineTotal, rc)}</td>
       </tr>
     `;
         })
         .join("")
-    : `<tr><td colspan="6" class="text-center text-muted">—</td></tr>`;
+    : "";
 
   const contactLines = [];
   if (data.name) {
@@ -546,6 +710,48 @@ function buildPreviewHtml(data) {
     : "";
 
   const [svc1, svc2] = serviceInformationLines(data);
+  const logoSrc = getEmbeddedLogoDataUrl() || "logo.png";
+
+  const freightSectionHtml = freightItems.length
+    ? `
+      <h3 class="quot-section-title">Freight Rate</h3>
+      <table class="pdf-table quot-table-basic">
+        <thead>
+          <tr>
+            <th class="w-sl">Sl.</th>
+            <th>Description</th>
+            <th class="w-uom">UOM</th>
+            <th class="pdf-right w-qty">Qty</th>
+            <th class="w-curr">Curr</th>
+            <th class="pdf-right w-rate">Unit Price</th>
+            <th class="pdf-right w-rate">Total</th>
+          </tr>
+        </thead>
+        <tbody>${freightRows}</tbody>
+      </table>
+    `
+    : "";
+
+  const localSectionHtml = localItems.length
+    ? `
+      <h3 class="quot-section-title">Local Charges</h3>
+      <table class="pdf-table quot-table-local">
+        <thead>
+          <tr>
+            <th class="w-sl">Sl.</th>
+            <th>Description</th>
+            <th class="w-uom">UOM</th>
+            <th class="w-rem">Remarks</th>
+            <th class="pdf-right w-qty">Qty</th>
+            <th class="w-curr">Curr</th>
+            <th class="pdf-right w-rate">Unit Price</th>
+            <th class="pdf-right w-rate">Total</th>
+          </tr>
+        </thead>
+        <tbody>${localRows}</tbody>
+      </table>
+    `
+    : "";
 
   return `
     <div class="pdf-sheet pdf-a4 quotation-preview">
@@ -555,7 +761,7 @@ function buildPreviewHtml(data) {
           ${COMPANY_FOOTER_LINES.slice(1).map((line) => `<p class="quot-company-line">${sanitizeHtml(line)}</p>`).join("")}
         </div>
         <div class="quot-top-logo">
-          <img src="logo.png" alt="Company logo" class="quot-top-logo-img" />
+          <img src="${sanitizeHtml(logoSrc)}" alt="Company logo" class="quot-top-logo-img" />
         </div>
       </div>
       <div class="quot-head-row">
@@ -572,39 +778,12 @@ function buildPreviewHtml(data) {
       <p class="service-info-line">${sanitizeHtml(svc1)}<br />${sanitizeHtml(svc2)}</p>
       ${shipmentDetailHtml}
 
-      <h3 class="quot-section-title">Freight Rate</h3>
-      <table class="pdf-table quot-table-basic">
-        <thead>
-          <tr>
-            <th class="w-sl">Sl.</th>
-            <th>Description</th>
-            <th class="w-uom">UOM</th>
-            <th class="w-curr">Curr</th>
-            <th class="pdf-right w-rate">Rate</th>
-          </tr>
-        </thead>
-        <tbody>${freightRows}</tbody>
-      </table>
+      ${freightSectionHtml}
 
-      <h3 class="quot-section-title">Local Charges</h3>
-      <table class="pdf-table quot-table-local">
-        <thead>
-          <tr>
-            <th class="w-sl">Sl.</th>
-            <th>Description</th>
-            <th class="w-uom">UOM</th>
-            <th class="w-rem">Remarks</th>
-            <th class="w-curr">Curr</th>
-            <th class="pdf-right w-rate">Rate</th>
-          </tr>
-        </thead>
-        <tbody>${localRows}</tbody>
-      </table>
+      ${localSectionHtml}
 
       <div class="pdf-total quot-grand">
         <span class="quot-label">Grand Total:</span> <strong>${sanitizeHtml(grandTotalDisplay)}</strong>
-        <br />
-        <span class="pdf-muted quot-gen">Incoterms: ${sanitizeHtml(data.incoterms)} | Priority: ${sanitizeHtml(data.priority)}</span>
       </div>
 
       <div class="quot-remarks">
@@ -654,7 +833,6 @@ function loadFromLocalStorage() {
     if (exRateUsdInput) exRateUsdInput.value = ex.USD ?? 1;
     if (exRateLkrInput) exRateLkrInput.value = ex.LKR ?? 1;
     if (exRateEurInput) exRateEurInput.value = ex.EUR ?? 1;
-    priorityInput.value = data.priority || "Normal";
     shipmentTypeInput.value = data.shipmentType || "";
     if (polInput) polInput.value = data.pol || "";
     if (podInput) podInput.value = data.pod || "";
@@ -732,7 +910,7 @@ async function downloadPdfViaJsPdf(data, filename) {
   const logoW = 37;
   const logoX = pageWidth - margin - logoW;
   try {
-    const logoDataUrl = FIXED_LOGO_DATA_URL || (await loadImageAsDataUrlViaFetch("logo.png")) || (await loadImageAsPngDataUrl("logo.png"));
+    const logoDataUrl = (await getLogoDataUrlForPdf()) || (await loadImageAsDataUrlViaFetch("logo.png")) || (await loadImageAsPngDataUrl("logo.png"));
     if (logoDataUrl) {
       const probe = new Image();
       const ratio = await new Promise((resolve) => {
@@ -744,7 +922,12 @@ async function downloadPdfViaJsPdf(data, filename) {
         probe.src = logoDataUrl;
       });
       const fmt = guessImageFormatFromDataUrl(logoDataUrl);
-      doc.addImage(logoDataUrl, fmt, logoX, y, logoW, logoW * ratio);
+      const logoHMax = 18;
+      const rawH = logoW * ratio;
+      const logoH = Math.min(rawH, logoHMax);
+      const logoWAdj = ratio > 0 ? logoH / ratio : logoW;
+      const logoXAdj = pageWidth - margin - logoWAdj;
+      doc.addImage(logoDataUrl, fmt, logoXAdj, y, logoWAdj, logoH);
     }
   } catch {
     /* ignore */
@@ -752,10 +935,10 @@ async function downloadPdfViaJsPdf(data, filename) {
 
   const leftWidth = Math.max(60, logoX - margin - 2);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(11.0);
+  doc.setFontSize(12.5);
   doc.setTextColor(19, 58, 102);
   let headerY = y;
-  const headerLineHeight = 3.0;
+  const headerLineHeight = 3.2;
   COMPANY_FOOTER_LINES.forEach((line, idx) => {
     if (idx === 1) {
       doc.setFont("helvetica", "normal");
@@ -765,7 +948,7 @@ async function downloadPdfViaJsPdf(data, filename) {
     const wrapped = doc.splitTextToSize(line, leftWidth);
     wrapped.forEach((wLine) => {
       doc.text(wLine, margin, headerY);
-      headerY += headerLineHeight;
+      headerY += idx === 0 ? 3.6 : headerLineHeight;
     });
   });
   y = headerY + 2;
@@ -856,104 +1039,163 @@ async function downloadPdfViaJsPdf(data, filename) {
   }
 
   // Freight table
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
-  doc.text("Freight Rate", margin, y);
-  y += 4;
+  if (freightItems.length) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text("Freight Rate", margin, y);
+    y += 4;
 
-  const freightBody = freightItems.length
-    ? freightItems.map((item, i) => [
-        String(i + 1),
-        item.desc || "-",
-        item.unit || "-",
-        rowCur(item),
-        formatAmount(item.rate, rowCur(item)),
-      ])
-    : [["—", "—", "—", "—", "—"]];
+    const freightBody = freightItems.map((item, i) => {
+      const rc = rowCur(item);
+      const qty = Math.max(0.000001, Number(item.qty) || 1);
+      const unitPrice = Number(item.rate) || 0;
+      const lineTotal = unitPrice * qty;
+      return [String(i + 1), item.desc || "-", item.unit || "-", String(qty), rc, formatAmount(unitPrice, rc), formatAmount(lineTotal, rc)];
+    });
 
-  doc.autoTable({
-    startY: y,
-    head: [["Sl.", "Description", "UOM", "Curr", "Rate"]],
-    body: freightBody,
-    margin: { left: margin, right: margin },
-    tableWidth: contentWidth,
-    theme: "grid",
-    styles: { font: "helvetica", fontSize: 8, cellPadding: 1.6, overflow: "linebreak", textColor: [0, 0, 0] },
-    headStyles: { fillColor: [230, 230, 230], textColor: [0, 0, 0], fontStyle: "bold", fontSize: 8 },
-    columnStyles: {
-      0: { cellWidth: 12, halign: "center" },
-      1: { cellWidth: 90 },
-      2: { cellWidth: 24 },
-      3: { cellWidth: 20 },
-      4: { cellWidth: 40, halign: "right" },
-    },
-  });
+    doc.autoTable({
+      startY: y,
+      tableWidth: contentWidth,
+      theme: "grid",
+      head: [["Sl.", "Description", "UOM", "Qty", "Curr", "Unit Price", "Total"]],
+      body: freightBody,
+      styles: {
+        font: "helvetica",
+        fontSize: 8,
+        cellPadding: 1.6,
+        valign: "middle",
+        lineWidth: 0.15,
+        lineColor: [219, 226, 234],
+        textColor: [31, 42, 55],
+        overflow: "linebreak",
+      },
+      headStyles: {
+        fillColor: [245, 248, 252],
+        textColor: [51, 65, 85],
+        fontStyle: "bold",
+        halign: "center",
+        valign: "middle",
+      },
+      alternateRowStyles: { fillColor: [250, 252, 255] },
+      margin: { left: margin, right: margin },
+      columnStyles: {
+        0: { cellWidth: 10, halign: "center" },
+        2: { cellWidth: 16, halign: "center" },
+        3: { cellWidth: 14, halign: "right" },
+        4: { cellWidth: 14, halign: "center" },
+        5: { cellWidth: 24, halign: "right" },
+        6: { cellWidth: 28, halign: "right" },
+      },
+    });
 
-  y = doc.lastAutoTable.finalY + 6;
+    y = doc.lastAutoTable.finalY + 6;
+  }
 
   // Local charges table
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
-  doc.text("Local Charges", margin, y);
-  y += 4;
+  if (localItems.length) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text("Local Charges", margin, y);
+    y += 4;
 
-  const localBody = localItems.length
-    ? localItems.map((item, i) => {
-        const rc = rowCur(item);
-        return [String(i + 1), item.desc || "-", item.unit || "-", "—", rc, formatAmount(item.rate, rc)];
-      })
-    : [["—", "—", "—", "—", "—", "—"]];
+    const localBody = localItems.map((item, i) => {
+      const rc = rowCur(item);
+      const qty = Math.max(0.000001, Number(item.qty) || 1);
+      const unitPrice = Number(item.rate) || 0;
+      const lineTotal = unitPrice * qty;
+      return [String(i + 1), item.desc || "-", item.unit || "-", "—", String(qty), rc, formatAmount(unitPrice, rc), formatAmount(lineTotal, rc)];
+    });
 
-  doc.autoTable({
-    startY: y,
-    head: [["Sl.", "Item", "UOM", "Remarks", "Curr", "Rate"]],
-    body: localBody,
-    margin: { left: margin, right: margin },
-    tableWidth: contentWidth,
-    theme: "grid",
-    styles: { font: "helvetica", fontSize: 8, cellPadding: 1.6, overflow: "linebreak", textColor: [0, 0, 0] },
-    headStyles: { fillColor: [230, 230, 230], textColor: [0, 0, 0], fontStyle: "bold", fontSize: 8 },
-    columnStyles: {
-      0: { cellWidth: 10, halign: "center" },
-      1: { cellWidth: 80 },
-      2: { cellWidth: 20 },
-      3: { cellWidth: 36 },
-      4: { cellWidth: 16 },
-      5: { cellWidth: 24, halign: "right" },
-    },
-  });
+    doc.autoTable({
+      startY: y,
+      tableWidth: contentWidth,
+      theme: "grid",
+      head: [["Sl.", "Item", "UOM", "Remarks", "Qty", "Curr", "Unit Price", "Total"]],
+      body: localBody,
+      styles: {
+        font: "helvetica",
+        fontSize: 8,
+        cellPadding: 1.6,
+        valign: "middle",
+        lineWidth: 0.15,
+        lineColor: [219, 226, 234],
+        textColor: [31, 42, 55],
+        overflow: "linebreak",
+      },
+      headStyles: {
+        fillColor: [245, 248, 252],
+        textColor: [51, 65, 85],
+        fontStyle: "bold",
+        halign: "center",
+        valign: "middle",
+      },
+      alternateRowStyles: { fillColor: [250, 252, 255] },
+      margin: { left: margin, right: margin },
+      columnStyles: {
+        0: { cellWidth: 10, halign: "center" },
+        2: { cellWidth: 14, halign: "center" },
+        4: { cellWidth: 14, halign: "right" },
+        5: { cellWidth: 14, halign: "center" },
+        6: { cellWidth: 24, halign: "right" },
+        7: { cellWidth: 28, halign: "right" },
+      },
+    });
 
-  y = doc.lastAutoTable.finalY + 6;
+    y = doc.lastAutoTable.finalY + 6;
+  }
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.text(`Grand Total: ${grandTotalDisplay}`, pageWidth - margin, y, { align: "right" });
-  y += 5;
-  doc.text(`Incoterms: ${data.incoterms} | Priority: ${data.priority}`, pageWidth - margin, y, { align: "right" });
   y += 7;
 
   // Remarks box
   const remarksRaw = String(data.remarks || "").trim().replace(/\r\n/g, "\n");
-  const remarksBoxHeight = 18;
-  if (y + remarksBoxHeight + 18 > pageHeight) {
-    doc.addPage();
-    y = margin;
-  }
+  doc.setDrawColor(180);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(8.5);
   doc.text("Remarks :", margin, y);
   y += 3.2;
-  doc.setDrawColor(180);
-  doc.rect(margin, y, contentWidth, remarksBoxHeight);
+
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7.8);
-  const remLines = remarksRaw ? doc.splitTextToSize(remarksRaw, contentWidth - 4) : [];
+  const remLinesAll = remarksRaw ? doc.splitTextToSize(remarksRaw, contentWidth - 4) : [];
   const remLineH = 3.2;
-  let ry = y + 4;
-  remLines.slice(0, Math.floor((remarksBoxHeight - 4) / remLineH)).forEach((line) => {
-    doc.text(line, margin + 2, ry);
-    ry += remLineH;
-  });
-  y += remarksBoxHeight + 7;
+
+  let startIdx = 0;
+  while (startIdx < remLinesAll.length || startIdx === 0) {
+    const availableH = pageHeight - y - 18;
+    if (availableH < 12) {
+      doc.addPage();
+      y = margin;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8.5);
+      doc.text("Remarks (cont.) :", margin, y);
+      y += 3.2;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.8);
+    }
+
+    const remaining = remLinesAll.slice(startIdx);
+    const desiredH = Math.max(18, remaining.length * remLineH + 4);
+    const boxH = Math.min(desiredH, pageHeight - y - 18);
+
+    doc.rect(margin, y, contentWidth, boxH);
+    const maxLinesThisBox = Math.max(0, Math.floor((boxH - 4) / remLineH));
+    const linesThisBox = remaining.slice(0, maxLinesThisBox);
+
+    let ry = y + 4;
+    linesThisBox.forEach((line) => {
+      doc.text(line, margin + 2, ry);
+      ry += remLineH;
+    });
+
+    startIdx += linesThisBox.length;
+    y += boxH + 7;
+
+    if (linesThisBox.length === 0) {
+      break;
+    }
+  }
 
   // Terms
   const termsRaw = (data.terms || DEFAULT_TERMS).trim().replace(/\r\n/g, "\n");
@@ -990,13 +1232,9 @@ async function downloadPdf() {
     if (!validateForm(true)) {
       return;
     }
-    if (typeof window.html2pdf !== "function") {
-      alert("PDF libraries are not loaded. Please refresh and try again.");
-      return;
-    }
-
     const data = getFormData();
     pdfContent.innerHTML = buildPreviewHtml(data);
+    applyEmbeddedLogoToDom();
     previewSection.classList.remove("d-none");
 
     // Export must capture a *visible* node. We'll clone the rendered sheet into an off-screen
@@ -1006,105 +1244,9 @@ async function downloadPdf() {
     const datePart = getTodayDate();
     const filename = `Form_${datePart}.pdf`;
 
-    const isFirefox = typeof navigator !== "undefined" && /firefox/i.test(navigator.userAgent || "");
-    if (isFirefox) {
-      await downloadPdfViaJsPdf(data, filename);
-      return;
-    }
-
-    const sheet = pdfContent.querySelector(".pdf-sheet") || pdfContent;
-    const exportHost = document.createElement("div");
-    exportHost.id = "pdfExportHost";
-    exportHost.style.position = "fixed";
-    exportHost.style.left = "-10000px";
-    exportHost.style.top = "0";
-    exportHost.style.width = `${sheet.scrollWidth || sheet.clientWidth || 800}px`;
-    exportHost.style.background = "#ffffff";
-    exportHost.style.zIndex = "2147483647";
-
-    const exportNode = sheet.cloneNode(true);
-    exportNode.style.display = "block";
-    exportNode.style.visibility = "visible";
-    exportNode.style.margin = "0";
-
-    exportHost.appendChild(exportNode);
-    document.body.appendChild(exportHost);
-
-    // Inline images into the export DOM so html2canvas doesn't depend on network/file URL access.
-    // This is especially important when running from file:// or when CORS blocks image loading.
-    applyFixedLogoToDom(exportNode);
-    const exportImgs = Array.from(exportNode.querySelectorAll("img"));
-    await Promise.all(
-      exportImgs.map(async (img) => {
-        try {
-          const src = img.getAttribute("src") || "";
-          if (!src || /^data:/i.test(src)) {
-            return;
-          }
-          if (src === "logo.png" || src === "./logo.png") {
-            img.setAttribute("src", FIXED_LOGO_DATA_URL);
-            return;
-          }
-          const dataUrl = (await loadImageAsDataUrlViaFetch(src)) || (await loadImageAsPngDataUrl(src));
-          if (dataUrl) {
-            img.setAttribute("src", dataUrl);
-          }
-        } catch {
-          /* ignore */
-        }
-      }),
-    );
-
-    // Wait for fonts (if supported) and images to load in the export node.
-    try {
-      if (document.fonts?.ready) {
-        await document.fonts.ready;
-      }
-    } catch {
-      /* ignore */
-    }
-
-    const imgs = Array.from(exportNode.querySelectorAll("img"));
-    await Promise.all(
-      imgs.map(async (img) => {
-        try {
-          if (!img.complete) {
-            await new Promise((resolve) => {
-              img.onload = resolve;
-              img.onerror = resolve;
-            });
-          }
-          if (img.decode) {
-            await img.decode().catch(() => undefined);
-          }
-        } catch {
-          /* ignore */
-        }
-      }),
-    );
-
-    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-
-    const opt = {
-      margin: 0,
-      filename,
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: {
-        scale: 1.5,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#ffffff",
-        logging: false,
-      },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-      pagebreak: { mode: ["css", "legacy"] },
-    };
-
-    try {
-      await window.html2pdf().set(opt).from(exportNode).save();
-    } finally {
-      exportHost.remove();
-    }
+    // Use jsPDF in all browsers for consistent output.
+    await downloadPdfViaJsPdf(data, filename);
+    return;
   } catch (err) {
     const msg = err && typeof err === "object" && "message" in err ? String(err.message) : String(err);
     alert(
@@ -1122,7 +1264,6 @@ async function downloadPdf() {
     throw err;
   }
 }
-
 function attachEventListeners() {
   addItemBtn.addEventListener("click", () => {
     addItemRow();
@@ -1144,7 +1285,7 @@ function attachEventListeners() {
 
   form.addEventListener("input", (event) => {
     if (
-      ["item-desc", "item-unit", "item-currency", "item-rate"].some((cls) => event.target.classList.contains(cls)) ||
+      ["item-desc", "item-unit", "item-qty", "item-currency", "item-rate"].some((cls) => event.target.classList.contains(cls)) ||
       ["exRateUSD", "exRateLKR", "exRateEUR"].includes(event.target.id)
     ) {
       recalculateTotals();
@@ -1189,7 +1330,7 @@ function attachEventListeners() {
 
 function init() {
   formRefEl.textContent = createReferenceId();
-  applyFixedLogoToDom(document);
+  applyEmbeddedLogoToDom();
   const restored = loadFromLocalStorage();
   if (!restored) {
     requestDateInput.value = getTodayDate();
