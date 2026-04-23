@@ -31,7 +31,7 @@ const exRateUsdInput = document.getElementById("exRateUSD");
 const exRateLkrInput = document.getElementById("exRateLKR");
 const exRateEurInput = document.getElementById("exRateEUR");
 const exToCurrencyEls = Array.from(document.querySelectorAll(".ex-to-currency"));
-const UNIT_OPTIONS = ["BL", "M3", "W/M", "KG", "20HC", "40HC", '20"RF', '40"RF', "SHIPMENT"];
+const UNIT_OPTIONS = ["BL", "M3", "W/M", "KG", "20GP", "40HC", '20"RF', '40"RF', "SHIPMENT"];
 const CHARGE_TYPES = {
   FREIGHT: "Freight Rate",
   LOCAL: "Local Charges",
