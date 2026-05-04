@@ -458,6 +458,9 @@ function addItemRow(item = {}) {
       <div class="invalid-feedback">Please select a unit.</div>
     </td>
     <td>
+      <input type="text" class="form-control item-remarks" placeholder="Remarks" value="${sanitizeHtml(item.remarks || "")}" />
+    </td>
+    <td>
       <input type="number" class="form-control item-qty text-end" min="0" step="any" value="${qty}" required />
       <div class="invalid-feedback">Qty must be greater than 0.</div>
     </td>
@@ -517,6 +520,7 @@ function getItemsData() {
     desc: row.querySelector(".item-desc").value.trim(),
     type: row.querySelector(".item-type")?.value || CHARGE_TYPES.LOCAL,
     unit: row.querySelector(".item-unit").value,
+    remarks: row.querySelector(".item-remarks")?.value.trim() || "",
     qty: Math.max(0.000001, Number.parseFloat(String(row.querySelector(".item-qty")?.value ?? "")) || 1),
     currency: row.querySelector(".item-currency").value || "USD",
     rate: Number(row.querySelector(".item-rate").value) || 0,
@@ -644,6 +648,7 @@ function buildPreviewHtml(data) {
           <td>${sl}</td>
           <td>${sanitizeHtml(item.desc || "-")}</td>
           <td>${sanitizeHtml(item.unit || "-")}</td>
+          <td>${sanitizeHtml(item.remarks || "-")}</td>
           <td class="pdf-right">${qty}</td>
           <td>${sanitizeHtml(rc)}</td>
           <td class="pdf-right">${formatAmount(unitPrice, rc)}</td>
@@ -667,7 +672,7 @@ function buildPreviewHtml(data) {
         <td>${sl}</td>
         <td>${sanitizeHtml(item.desc || "-")}</td>
         <td>${sanitizeHtml(item.unit || "-")}</td>
-        <td>—</td>
+        <td>${sanitizeHtml(item.remarks || "-")}</td>
         <td class="pdf-right">${qty}</td>
         <td>${sanitizeHtml(rc)}</td>
         <td class="pdf-right">${formatAmount(unitPrice, rc)}</td>
@@ -721,6 +726,7 @@ function buildPreviewHtml(data) {
             <th class="w-sl">Sl.</th>
             <th>Description</th>
             <th class="w-uom">UOM</th>
+            <th class="w-rem">Remarks</th>
             <th class="pdf-right w-qty">Qty</th>
             <th class="w-curr">Curr</th>
             <th class="pdf-right w-rate">Unit Price</th>
@@ -1050,14 +1056,14 @@ async function downloadPdfViaJsPdf(data, filename) {
       const qty = Math.max(0.000001, Number(item.qty) || 1);
       const unitPrice = Number(item.rate) || 0;
       const lineTotal = unitPrice * qty;
-      return [String(i + 1), item.desc || "-", item.unit || "-", String(qty), rc, formatAmount(unitPrice, rc), formatAmount(lineTotal, rc)];
+      return [String(i + 1), item.desc || "-", item.unit || "-", item.remarks || "-", String(qty), rc, formatAmount(unitPrice, rc), formatAmount(lineTotal, rc)];
     });
 
     doc.autoTable({
       startY: y,
       tableWidth: contentWidth,
       theme: "grid",
-      head: [["Sl.", "Description", "UOM", "Qty", "Curr", "Unit Price", "Total"]],
+      head: [["Sl.", "Description", "UOM", "Remarks", "Qty", "Curr", "Unit Price", "Total"]],
       body: freightBody,
       styles: {
         font: "helvetica",
@@ -1081,10 +1087,11 @@ async function downloadPdfViaJsPdf(data, filename) {
       columnStyles: {
         0: { cellWidth: 10, halign: "center" },
         2: { cellWidth: 16, halign: "center" },
-        3: { cellWidth: 14, halign: "right" },
-        4: { cellWidth: 14, halign: "center" },
-        5: { cellWidth: 24, halign: "right" },
-        6: { cellWidth: 28, halign: "right" },
+        3: { cellWidth: 26 },
+        4: { cellWidth: 14, halign: "right" },
+        5: { cellWidth: 14, halign: "center" },
+        6: { cellWidth: 22, halign: "right" },
+        7: { cellWidth: 24, halign: "right" },
       },
     });
 
@@ -1103,14 +1110,14 @@ async function downloadPdfViaJsPdf(data, filename) {
       const qty = Math.max(0.000001, Number(item.qty) || 1);
       const unitPrice = Number(item.rate) || 0;
       const lineTotal = unitPrice * qty;
-      return [String(i + 1), item.desc || "-", item.unit || "-", "—", String(qty), rc, formatAmount(unitPrice, rc), formatAmount(lineTotal, rc)];
+      return [String(i + 1), item.desc || "-", item.unit || "-", item.remarks || "-", String(qty), rc, formatAmount(unitPrice, rc), formatAmount(lineTotal, rc)];
     });
 
     doc.autoTable({
       startY: y,
       tableWidth: contentWidth,
       theme: "grid",
-      head: [["Sl.", "Item", "UOM", "Remarks", "Qty", "Curr", "Unit Price", "Total"]],
+      head: [["Sl.", "Description", "UOM", "Remarks", "Qty", "Curr", "Unit Price", "Total"]],
       body: localBody,
       styles: {
         font: "helvetica",
@@ -1136,8 +1143,8 @@ async function downloadPdfViaJsPdf(data, filename) {
         2: { cellWidth: 14, halign: "center" },
         4: { cellWidth: 14, halign: "right" },
         5: { cellWidth: 14, halign: "center" },
-        6: { cellWidth: 24, halign: "right" },
-        7: { cellWidth: 28, halign: "right" },
+        6: { cellWidth: 22, halign: "right" },
+        7: { cellWidth: 24, halign: "right" },
       },
     });
 
@@ -1285,7 +1292,7 @@ function attachEventListeners() {
 
   form.addEventListener("input", (event) => {
     if (
-      ["item-desc", "item-unit", "item-qty", "item-currency", "item-rate"].some((cls) => event.target.classList.contains(cls)) ||
+      ["item-desc", "item-unit", "item-remarks", "item-qty", "item-currency", "item-rate"].some((cls) => event.target.classList.contains(cls)) ||
       ["exRateUSD", "exRateLKR", "exRateEUR"].includes(event.target.id)
     ) {
       recalculateTotals();
